@@ -329,14 +329,12 @@ The next championship dates will be published here and in the official circulars
 <div aria-live="polite" class="testimonial-slider-wrapper" id="testimonial-slider">
 @foreach ($internationalPlayers as $player)
 <div class="testimonial-slide" data-index="{{ $loop->index }}">
+<p class="testimonial-quote">{{ $player->details ?: $player->country }}</p>
 <img alt="" class="testimonial-avatar" loading="lazy" src="{{ $player->photo ? Storage::url($player->photo) : asset('assets/images/jfi/person-placeholder.svg') }}"/>
 <div class="d-flex flex-column align-items-center">
 <span class="testimonial-name">{{ $player->name }}</span>
 <span class="testimonial-designation">{{ $player->country }}</span>
 </div>
-@if ($player->details)
-<p class="testimonial-quote">{{ $player->details }}</p>
-@endif
 </div>
 @endforeach
 </div>

@@ -2437,10 +2437,17 @@ input[type="file"].form-control-jfi::file-selector-button{
 
 /* International players: world map behind the slider */
 .international-banner{
-    background-image: url("../images/World-Map.png");
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: contain;
+    position: relative;
+    isolation: isolate;
+}
+
+.international-banner::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: url("../images/World-Map.png") center / contain no-repeat;
+    filter: grayscale(1);
 }
 
 .international-banner .card-testimonial{
@@ -2477,5 +2484,16 @@ input[type="file"].form-control-jfi::file-selector-button{
 
     .whychooseus-badge-value{
         font-size: 22px;
+    }
+
+    /* Template box is 51% wide at the top right; on phones span the bottom of the photo instead */
+    .community-cta{
+        top: auto;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        gap: 10px;
+        padding: 20px;
+        border-radius: 0 0 var(--radius-md) var(--radius-md);
     }
 }

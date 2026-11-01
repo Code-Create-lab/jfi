@@ -211,7 +211,8 @@ Website text, event details, office bearer info, state association info, player 
 - **Frontend design stage:** every public page in section 4 (except the admin area) exists as a Blade view in `resources/views/frontend/`, with layout `layouts/frontend.blade.php`. Routes are `Route::view()` calls named `frontend.*`; navigation lives in `config('jumpball.navigation')`.
 - **Preview data:** views fall back to unsaved sample models from `resources/views/frontend/_preview-data.php` only when a variable is missing (`$events ??= ...`). When wiring controllers, pass the same variable names, then delete that file and the fallback lines. Forms post to `#` until the wiring step.
 - **Styles:** brand overrides in `public/assets/css/jfi-theme.css`, page components in `public/assets/css/jfi-components.css`. Do not edit the template's `main.css`.
-- **Images:** generated brand graphics in `public/assets/images/jfi/` (cover-1..6 are the fallback covers when no image is uploaded; certificate sample is watermarked SAMPLE). Real photos come from the client (section 11).
+- **Images:** generated brand graphics in `public/assets/images/jfi/` (cover-1..6 are the fallback covers when no image is uploaded; certificate sample is watermarked SAMPLE). A few photos and icons from the original template in `public/assets/images/` are placeholders on the home page, in preview data and in inner page banners (`config('jumpball.page_banners')`, route pattern => photo); replace them with client photos (section 11). Unused template images were removed; a local copy is in `storage/app/backups/` (git-ignored).
+- **Animations:** template scroll-in effect: add `animate-box animate__animated` plus `data-animate="animate__fadeInUp"` (handled by `script.js`). Shared components already do this; cards in a `.row` are staggered by CSS.
 
 ## 14. Database Layer (implemented)
 

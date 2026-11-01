@@ -133,7 +133,9 @@ textarea:focus-visible{
 }
 
 .slideshow-container .slide::before{
-    background: linear-gradient(100deg, rgba(6, 21, 56, .92) 0%, rgba(6, 21, 56, .70) 45%, rgba(10, 36, 99, .35) 100%);
+    background:
+        linear-gradient(180deg, rgba(6, 21, 56, 0) 55%, rgba(6, 21, 56, .85) 100%),
+        linear-gradient(100deg, rgba(6, 21, 56, .92) 0%, rgba(6, 21, 56, .74) 45%, rgba(10, 36, 99, .45) 100%);
     opacity: 1;
 }
 
