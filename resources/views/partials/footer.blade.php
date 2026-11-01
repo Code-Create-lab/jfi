@@ -1,124 +1,60 @@
+@php($contact ??= (require resource_path('views/frontend/_preview-data.php'))['contact'])
 <footer>
 <div class="section pb-0 bg-accent-color">
 <div class="hero-container">
 <div class="footer-content-container">
-<div class="row row-cols-xl-4 row-cols-md-2 row-cols-1 grid-spacer-2">
-<div class="col">
-<div class="d-flex flex-column gspace-2">
+<div class="row gx-4 gy-5">
+<div class="col-lg-4">
 <div class="footer-logo-container">
 <img alt="Jumpball Federation of India" class="img-fluid" src="{{ asset('assets/images/jfi-logo.png') }}"/>
 </div>
-<p class="secondary-accent mb-0">The national governing body for Jumpball in India, responsible for competitions, athlete pathways, coaching standards and state affiliation.</p>
-<div class="footer-social-icon">
-<a aria-label="Facebook" class="social-icon" href="#">
-<i class="fa-brands fa-facebook-f"></i>
-</a>
-<a aria-label="X" class="social-icon" href="#">
-<i class="fa-brands fa-x-twitter"></i>
-</a>
-<a aria-label="Instagram" class="social-icon" href="#">
-<i class="fa-brands fa-instagram"></i>
-</a>
-<a aria-label="YouTube" class="social-icon" href="#">
-<i class="fa-brands fa-youtube"></i>
-</a>
-<a aria-label="LinkedIn" class="social-icon" href="#">
-<i class="fa-brands fa-linkedin-in"></i>
-</a>
-</div>
-</div>
-</div>
-<div class="col">
-<div class="d-flex flex-column gspace-2">
-<h4 class="secondary-accent">The Federation</h4>
-<div class="underline-primary-accent"></div>
-<ul class="chevron-list">
-<li><a href="{{ route('about') }}">About JFI</a></li>
-<li><a href="{{ route('event') }}">Championships &amp; Events</a></li>
-<li><a href="{{ route('membership') }}">Membership &amp; Affiliation</a></li>
-<li><a href="{{ route('coaching') }}">Coaching &amp; Academy</a></li>
-<li><a href="{{ route('community') }}">State Associations</a></li>
-<li><a href="{{ route('blog') }}">News &amp; Updates</a></li>
-<li><a href="{{ route('contact') }}">Contact</a></li>
+<p class="secondary-accent mt-4 mb-0">The national governing body for Jumpball in India, responsible for competitions, player registration, certificates and the recognition of state associations.</p>
+<ul class="footer-contact">
+<li><i aria-hidden="true" class="fa-solid fa-location-dot"></i><span>{{ $contact['address'] }}</span></li>
+<li><i aria-hidden="true" class="fa-solid fa-phone"></i><a href="tel:{{ preg_replace('/[^0-9+]/', '', $contact['phone']) }}">{{ $contact['phone'] }}</a></li>
+<li><i aria-hidden="true" class="fa-solid fa-envelope"></i><a href="mailto:{{ $contact['email'] }}">{{ $contact['email'] }}</a></li>
 </ul>
 </div>
+<div class="col-6 col-md-4 col-lg-2 offset-lg-1">
+<h2 class="footer-heading">Federation</h2>
+<ul class="footer-links">
+<li><a href="{{ route('frontend.about.federation') }}">About the Federation</a></li>
+<li><a href="{{ route('frontend.about.president') }}">President's Message</a></li>
+<li><a href="{{ route('frontend.office-bearers.national') }}">Office Bearers</a></li>
+<li><a href="{{ route('frontend.associations.index') }}">State Associations</a></li>
+<li><a href="{{ route('frontend.community.index') }}">Awareness</a></li>
+<li><a href="{{ route('frontend.contact') }}">Contact</a></li>
+</ul>
 </div>
-<div class="col">
-<div class="d-flex flex-column gspace-2">
-<h4 class="secondary-accent">National Office</h4>
-<div class="underline-primary-accent"></div>
-<div class="d-flex flex-column gspace-2">
-<div class="d-flex flex-row gspace-2 align-items-start">
-<div>
-<div class="contact-icon footer-icon">
-<i class="fa-solid fa-phone"></i>
+<div class="col-6 col-md-4 col-lg-2">
+<h2 class="footer-heading">Players &amp; Events</h2>
+<ul class="footer-links">
+<li><a href="{{ route('frontend.players.register') }}">Player Registration</a></li>
+<li><a href="{{ route('frontend.players.index') }}">Player Database</a></li>
+<li><a href="{{ route('frontend.certificates.index') }}">Verify a Certificate</a></li>
+<li><a href="{{ route('frontend.events.upcoming') }}">Upcoming Events</a></li>
+<li><a href="{{ route('frontend.results.index') }}">Championship Results</a></li>
+<li><a href="{{ route('frontend.players.login') }}">Player Login</a></li>
+</ul>
 </div>
-</div>
-<div class="d-flex flex-column">
-<h6 class="contact-info-heading">Phone</h6>
-<h5 class="secondary-accent">+91 00000 00000</h5>
-</div>
-</div>
-<div class="d-flex flex-row gspace-2 align-items-start">
-<div>
-<div class="contact-icon footer-icon">
-<i class="fa-solid fa-envelope"></i>
-</div>
-</div>
-<div class="d-flex flex-column">
-<h6 class="contact-info-heading">Email</h6>
-<h5 class="secondary-accent">info@jfi.org.in</h5>
-</div>
-</div>
-<div class="d-flex flex-row gspace-2 align-items-start">
-<div>
-<div class="contact-icon footer-icon">
-<i class="fa-solid fa-location-dot"></i>
-</div>
-</div>
-<div class="d-flex flex-column">
-<h6 class="contact-info-heading">Address</h6>
-<h5 class="secondary-accent">JFI National Office, New Delhi, India</h5>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="col">
-<div class="d-flex flex-column gspace-2">
-<h4 class="secondary-accent">Federation Bulletin</h4>
-<div class="underline-primary-accent"></div>
-<p class="secondary-accent">Championship calendars, selection notices and circulars, delivered to your inbox.</p>
-<div class="alert success hidden" id="newsletter-success">
-<span class="check-icon"><i class="fa-solid fa-2xl fa-check"></i></span>
-<p class="text-center">Thank you. You are subscribed to the JFI bulletin.</p>
-</div>
-<div class="alert error hidden" id="newsletter-error">
-<span class="cross-icon"><i class="fa-solid fa-2xl fa-xmark"></i></span>
-<p class="text-center">Subscription failed. Please try again.</p>
-</div>
-<form action="#" class="form" id="newsletter-form" method="post">
-<label class="visually-hidden" for="newsletter">Email address</label>
-<input autocomplete="email" id="newsletter" name="newsletter" placeholder="Your email address" type="email"/>
-<button class="btn btn-accent" type="submit">
-<span class="btn-title">Subscribe</span>
-<span class="icon-circle">
-<i class="fa-solid fa-arrow-right"></i>
-</span>
-</button>
-</form>
-</div>
+<div class="col-6 col-md-4 col-lg-3">
+<h2 class="footer-heading">Media &amp; Documents</h2>
+<ul class="footer-links">
+<li><a href="{{ route('frontend.news.index') }}">News &amp; Press Releases</a></li>
+<li><a href="{{ route('frontend.gallery.index') }}">Photo Gallery</a></li>
+<li><a href="{{ route('frontend.videos') }}">Video Gallery</a></li>
+<li><a href="{{ route('frontend.downloads') }}">Downloads &amp; Notices</a></li>
+<li><a href="{{ route('frontend.rule-book') }}">Rule Book</a></li>
+</ul>
 </div>
 </div>
 <div class="footer-copyright-container">
 <div class="footer-legalink-container">
-<a class="legalink" href="#">Privacy Policy</a>
+<a class="legalink" href="{{ route('frontend.legal.privacy') }}">Privacy Policy</a>
 <div class="divider"></div>
-<a class="legalink" href="#">Terms of Use</a>
-<div class="divider"></div>
-<a class="legalink" href="#">RTI &amp; Disclosures</a>
+<a class="legalink" href="{{ route('frontend.legal.terms') }}">Terms &amp; Conditions</a>
 </div>
-<h6 class="secondary-accent mb-0">&copy; {{ date('Y') }} Jumpball Federation of India. All rights reserved.</h6>
+<p class="mb-0 footer-copyright">&copy; {{ date('Y') }} Jumpball Federation of India. All rights reserved.</p>
 </div>
 </div>
 </div>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480" role="img" aria-label="Photo to be added">
+  <rect width="400" height="480" fill="#E8EEFA"/>
+  <circle cx="200" cy="185" r="82" fill="#0A2463" fill-opacity=".16"/>
+  <path d="M48 480c0-92 68-158 152-158s152 66 152 158z" fill="#0A2463" fill-opacity=".16"/>
+</svg>

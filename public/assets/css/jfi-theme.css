@@ -694,7 +694,8 @@ input:focus,
 textarea:focus,
 select:focus{
     border-color: var(--jfi-blue) !important;
-    box-shadow: none !important;
+    box-shadow: 0 0 0 3px rgba(20, 64, 168, .2) !important;
+    outline: none;
 }
 
 /* 12. Footer */
@@ -793,9 +794,48 @@ footer .chevron-list a:hover{
     }
 }
 
+@media screen and (max-width: 1025px){
+    .banner-home-top{
+        gap: 40px;
+    }
+
+    .banner-home-title{
+        width: 100%;
+    }
+
+    .banner-home-network{
+        width: 100%;
+        margin-top: 0;
+        justify-content: flex-start;
+    }
+
+    .hero-panel{
+        max-width: 560px;
+    }
+}
+
 @media (max-width: 767.98px){
     .navbar-container{
         padding: 16px 16px 0 16px;
+    }
+
+    .banner-home-title{
+        text-align: left;
+        align-items: flex-start;
+    }
+
+    .banner-home-title .sub-heading{
+        justify-content: flex-start;
+    }
+
+    .hero-actions .btn,
+    .hero-actions .btn-outline-light-jfi{
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .hero-actions .btn-outline-light-jfi{
+        justify-content: center;
     }
 
     .navbar .logo-container{
@@ -850,4 +890,11 @@ footer .chevron-list a:hover{
         animation-duration: .01ms !important;
         transition-duration: .01ms !important;
     }
+}
+
+/* 14. Sidebar controls */
+
+.sidebar-dropdown-btn,
+.close-btn{
+    border-radius: var(--radius-sm);
 }
