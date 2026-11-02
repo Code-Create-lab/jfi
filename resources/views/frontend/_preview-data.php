@@ -49,13 +49,19 @@ $associations = collect([
     'uttar-pradesh' => $association('Uttar Pradesh', 'Lucknow'),
 ]);
 
-$nationalBearers = collect(['President', 'Senior Vice President', 'Vice President', 'General Secretary', 'Joint Secretary', 'Treasurer', 'Executive Member', 'Executive Member'])
-    ->map(fn (string $designation, int $index): OfficeBearer => new OfficeBearer([
-        'level' => BearerLevel::National,
-        'name' => 'Name to be confirmed',
-        'designation' => $designation,
-        'sort_order' => $index + 1,
-    ]));
+$nationalBearers = collect([
+    ['Rupesh Utam', 'President', 'rupesh-utam.webp', 'Pune, Maharashtra'],
+    ['Ram Pravesh Kumar', 'Secretary General', 'ram-pravesh-kumar.webp', null],
+    ['Amit Kumar Verma', 'Vice President', 'amit-kumar-verma.webp', null],
+    ['Rajesh Ranjan', 'Treasurer', 'rajesh-ranjan.webp', null],
+])->map(fn (array $bearer, int $index): OfficeBearer => new OfficeBearer([
+    'level' => BearerLevel::National,
+    'name' => $bearer[0],
+    'designation' => $bearer[1],
+    'location' => $bearer[3],
+    'photo' => 'assets/images/jfi/bearers/'.$bearer[2],
+    'sort_order' => $index + 1,
+]));
 
 $stateBearers = $associations->only(['maharashtra', 'delhi', 'karnataka'])
     ->flatMap(fn (StateAssociation $stateAssociation): array => collect(['President', 'Secretary', 'Treasurer'])

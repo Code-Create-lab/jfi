@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['level', 'state_association_id', 'name', 'designation', 'photo', 'sort_order', 'is_published'])]
+#[Fillable(['level', 'state_association_id', 'name', 'designation', 'location', 'photo', 'sort_order', 'is_published'])]
 class OfficeBearer extends Model
 {
     use Publishable;

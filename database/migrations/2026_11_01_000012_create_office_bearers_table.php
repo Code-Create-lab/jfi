@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('state_association_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('designation');
+            $table->string('location')->nullable();
             $table->string('photo')->nullable();
             $table->unsignedInteger('sort_order')->default(0);
             $table->boolean('is_published')->default(true);

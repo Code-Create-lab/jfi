@@ -4,7 +4,7 @@
 @section('meta_description', 'Official website of the Jumpball Federation of India: championships, results, player registration and Player ID, certificate verification and state associations.')
 
 @php
-    $preview = isset($banners, $stats, $upcomingEvents, $announcements, $latestNews, $galleries, $internationalPlayers) ? null : require resource_path('views/frontend/_preview-data.php');
+    $preview = isset($banners, $stats, $upcomingEvents, $announcements, $latestNews, $galleries, $internationalPlayers, $nationalBearers) ? null : require resource_path('views/frontend/_preview-data.php');
     $banners ??= $preview['banners'];
     $stats ??= $preview['stats'];
     $upcomingEvents ??= $preview['upcoming'];
@@ -12,6 +12,7 @@
     $latestNews ??= $preview['news']->take(3);
     $galleries ??= $preview['galleries'];
     $internationalPlayers ??= $preview['internationalPlayers'];
+    $nationalBearers ??= $preview['nationalBearers'];
     $nextEvent = $upcomingEvents->first();
     $highlightGallery = $galleries->first();
     $slides = $banners->map(fn ($banner): string => Str::startsWith($banner->image, 'assets/') ? asset($banner->image) : Storage::url($banner->image))->values();
@@ -120,6 +121,60 @@
 </section>
 </div>
 </div>
+@endif
+
+{{-- The founder --}}
+<section aria-labelledby="founder-title" class="section founder-section">
+<div class="hero-container">
+<div class="founder-grid">
+<figure class="founder-photo animate-box animate__animated" data-animate="animate__fadeInLeft">
+<img alt="Mr. Ram Pravesh Kumar, Founder of the International Jumpball Federation and Secretary General of the Jumpball Federation of India" height="1521" loading="lazy" src="{{ asset('assets/images/jfi/founder-ram-pravesh-kumar.jpg') }}" width="1034"/>
+<figcaption>
+<span class="founder-photo-name">Mr. Ram Pravesh Kumar</span>
+<span class="founder-photo-role">Founder, International Jumpball Federation</span>
+<span class="founder-photo-role">Secretary General, Jumpball Federation of India</span>
+</figcaption>
+</figure>
+<div class="founder-body">
+<x-section-heading id="founder-title" label="The Founder" title="Mr. Ram Pravesh Kumar"/>
+<div class="animate-box animate__animated" data-animate="animate__fadeInUp">
+<p class="founder-role">Founder, International Jumpball Federation &middot; Secretary General, Jumpball Federation of India</p>
+<p class="founder-lead">Mr. Ram Pravesh Kumar (R. P. Kumar) is the Founder of the International Jumpball Federation, Secretary General of the Jumpball Federation of India and the Concept Developer of Jumpball. He conceptualized and developed Jumpball as a fast-paced, skill-based, non-body-contact passing game.</p>
+<p>Jumpball is fundamentally a passing game, where the primary focus is on quick and accurate passing, teamwork, coordination, movement, ball control and creating opportunities to score. Dribbling is not permitted, and the ball cannot be bounced even once. Traveling is permitted according to the rules of the game.</p>
+</div>
+<blockquote class="founder-rule animate-box animate__animated" data-animate="animate__fadeInUp">
+<span class="founder-rule-label">The rule that defines the game</span>
+<p>The most distinctive and mandatory feature of Jumpball is the &ldquo;Jump to Score&rdquo; rule. A goal is valid only when a player jumps and strikes the ball toward the goalpost while in the air, and the ball enters the goal. Points depend on the take-off area: Attack Zone 1 point, Danger Zone 2 points, behind the Centre Line 3 points. If a player throws the ball while standing or moving without jumping, or strikes the ball before leaving the ground, the goal is invalid and no point is awarded.</p>
+</blockquote>
+<div class="animate-box animate__animated" data-animate="animate__fadeInUp">
+<p>Jumpball is a non-body-contact sport: pushing, holding, hitting, pulling or charging is prohibited, though screening from the front without contact is permitted. Passing is the fundamental element of Jumpball, while jumping is mandatory for scoring, and the 1-, 2- and 3-point system lets players choose their scoring area to suit the play. The sport emphasizes passing accuracy, teamwork, timing, movement, jumping ability, balance, coordination, ball control, distance judgment and speed.</p>
+<p>Mr. Ram Pravesh Kumar&rsquo;s contribution to the conception, structure, fundamental rules, technical framework, point-scoring system and development of Jumpball forms an important foundation in the establishment and growth of the sport.</p>
+</div>
+<ul class="founder-chips animate-box animate__animated" data-animate="animate__fadeInUp">
+<li><i aria-hidden="true" class="fa-solid fa-lightbulb"></i>Concept Developer</li>
+<li><i aria-hidden="true" class="fa-solid fa-book"></i>Fundamental Rules</li>
+<li><i aria-hidden="true" class="fa-solid fa-person-running"></i>Technical Framework</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+
+{{-- National office bearers --}}
+@if ($nationalBearers->isNotEmpty())
+<section aria-labelledby="bearers-title" class="section pt-0">
+<div class="hero-container">
+<div class="section-heading-row">
+<x-section-heading id="bearers-title" label="Office Bearers" lede="The national office bearers accountable for the rule book, the championship calendar and the player registry." title="Who Runs the Federation"/>
+<a class="jfi-link" href="{{ route('frontend.office-bearers.national') }}">All office bearers <i aria-hidden="true" class="fa-solid fa-arrow-right"></i></a>
+</div>
+<div class="row row-cols-2 row-cols-lg-4 g-4">
+@foreach ($nationalBearers->take(4) as $bearer)
+<div class="col"><x-person-card :person="$bearer"/></div>
+@endforeach
+</div>
+</div>
+</section>
 @endif
 
 {{-- About the federation, with counters --}}
