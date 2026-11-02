@@ -52,7 +52,6 @@ $associations = collect([
 $nationalBearers = collect([
     ['Rupesh Utam', 'President', 'rupesh-utam.webp', 'Pune, Maharashtra'],
     ['Ram Pravesh Kumar', 'Secretary General', 'ram-pravesh-kumar.webp', null],
-    ['Amit Kumar Verma', 'Vice President', 'amit-kumar-verma.webp', null],
     ['Rajesh Ranjan', 'Treasurer', 'rajesh-ranjan.webp', null],
 ])->map(fn (array $bearer, int $index): OfficeBearer => new OfficeBearer([
     'level' => BearerLevel::National,

@@ -168,7 +168,7 @@
 <x-section-heading id="bearers-title" label="Office Bearers" lede="The national office bearers accountable for the rule book, the championship calendar and the player registry." title="Who Runs the Federation"/>
 <a class="jfi-link" href="{{ route('frontend.office-bearers.national') }}">All office bearers <i aria-hidden="true" class="fa-solid fa-arrow-right"></i></a>
 </div>
-<div class="row row-cols-2 row-cols-lg-4 g-4">
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center">
 @foreach ($nationalBearers->take(4) as $bearer)
 <div class="col"><x-person-card :person="$bearer"/></div>
 @endforeach
