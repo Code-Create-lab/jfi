@@ -1,62 +1,71 @@
 <?php
 
+use App\Http\Controllers\Frontend\CommunityController;
+use App\Http\Controllers\Frontend\DownloadController;
+use App\Http\Controllers\Frontend\EventController;
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\MediaController;
+use App\Http\Controllers\Frontend\NewsController;
 use App\Http\Controllers\Frontend\OfficeBearerController;
+use App\Http\Controllers\Frontend\PageController;
+use App\Http\Controllers\Frontend\PlayerController;
+use App\Http\Controllers\Frontend\StateAssociationController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Public Site (design stage)
+| Public Site
 |--------------------------------------------------------------------------
 |
-| One route per public page in CLAUDE.md section 4. These are view routes
-| for now; the views fall back to design preview data until frontend
-| controllers pass real data. Form submissions are wired in a later step.
+| One route per public page in CLAUDE.md section 4. Content pages read from
+| the database (Phase 2A). The registration forms, player login and
+| certificate pages are still view routes with preview data; they are wired
+| in Phases 2B, 3 and 4. Contact details come from settings (view composer).
 |
 */
 
 Route::name('frontend.')->group(function () {
     Route::get('/', HomeController::class)->name('home');
 
-    Route::view('/about-federation', 'frontend.page', ['slug' => 'about-federation'])->name('about.federation');
-    Route::view('/about-jumpball', 'frontend.page', ['slug' => 'about-jumpball'])->name('about.jumpball');
-    Route::view('/president-message', 'frontend.page', ['slug' => 'president-message'])->name('about.president');
+    Route::get('/about-federation', PageController::class)->defaults('slug', 'about-federation')->name('about.federation');
+    Route::get('/about-jumpball', PageController::class)->defaults('slug', 'about-jumpball')->name('about.jumpball');
+    Route::get('/president-message', PageController::class)->defaults('slug', 'president-message')->name('about.president');
     Route::get('/office-bearers/national', [OfficeBearerController::class, 'national'])->name('office-bearers.national');
-    Route::view('/office-bearers/state', 'frontend.office-bearers', ['level' => 'state'])->name('office-bearers.state');
+    Route::get('/office-bearers/state', [OfficeBearerController::class, 'state'])->name('office-bearers.state');
 
-    Route::view('/state-associations', 'frontend.associations.index')->name('associations.index');
+    Route::get('/state-associations', [StateAssociationController::class, 'index'])->name('associations.index');
     Route::view('/state-associations/register', 'frontend.associations.register')->name('associations.register');
 
-    Route::view('/players', 'frontend.players.index')->name('players.index');
+    Route::get('/players', [PlayerController::class, 'index'])->name('players.index');
     Route::view('/players/register', 'frontend.players.register')->name('players.register');
     Route::view('/players/login', 'frontend.players.login')->name('players.login');
-    Route::view('/international-players', 'frontend.players.international')->name('players.international');
+    Route::get('/international-players', [PlayerController::class, 'international'])->name('players.international');
 
-    Route::view('/events/current', 'frontend.events.index', ['period' => 'current'])->name('events.current');
-    Route::view('/events/upcoming', 'frontend.events.index', ['period' => 'upcoming'])->name('events.upcoming');
-    Route::view('/events/previous', 'frontend.events.index', ['period' => 'previous'])->name('events.previous');
-    Route::view('/events/{slug}', 'frontend.events.show')->name('events.show');
+    Route::get('/events/current', [EventController::class, 'index'])->defaults('period', 'current')->name('events.current');
+    Route::get('/events/upcoming', [EventController::class, 'index'])->defaults('period', 'upcoming')->name('events.upcoming');
+    Route::get('/events/previous', [EventController::class, 'index'])->defaults('period', 'previous')->name('events.previous');
+    Route::get('/events/{slug}', [EventController::class, 'show'])->name('events.show');
 
-    Route::view('/results', 'frontend.results.index', ['position' => 0])->name('results.index');
-    Route::view('/results/winners', 'frontend.results.index', ['position' => 1])->name('results.winners');
-    Route::view('/results/runners-up', 'frontend.results.index', ['position' => 2])->name('results.runners-up');
-    Route::view('/results/third-place', 'frontend.results.index', ['position' => 3])->name('results.third-place');
+    Route::get('/results', [EventController::class, 'results'])->defaults('position', 0)->name('results.index');
+    Route::get('/results/winners', [EventController::class, 'results'])->defaults('position', 1)->name('results.winners');
+    Route::get('/results/runners-up', [EventController::class, 'results'])->defaults('position', 2)->name('results.runners-up');
+    Route::get('/results/third-place', [EventController::class, 'results'])->defaults('position', 3)->name('results.third-place');
 
     Route::view('/certificates', 'frontend.certificates.index')->name('certificates.index');
     Route::view('/certificates/verify/{code}', 'frontend.certificates.verify')->name('certificates.verify');
 
-    Route::view('/news', 'frontend.news.index')->name('news.index');
-    Route::view('/news/{slug}', 'frontend.news.show')->name('news.show');
-    Route::view('/gallery', 'frontend.gallery.index')->name('gallery.index');
-    Route::view('/gallery/{slug}', 'frontend.gallery.show')->name('gallery.show');
-    Route::view('/videos', 'frontend.videos')->name('videos');
-    Route::view('/downloads', 'frontend.downloads')->name('downloads');
-    Route::view('/rule-book', 'frontend.downloads', ['mode' => 'rule-book'])->name('rule-book');
+    Route::get('/news', [NewsController::class, 'index'])->name('news.index');
+    Route::get('/news/{slug}', [NewsController::class, 'show'])->name('news.show');
+    Route::get('/gallery', [MediaController::class, 'galleries'])->name('gallery.index');
+    Route::get('/gallery/{slug}', [MediaController::class, 'gallery'])->name('gallery.show');
+    Route::get('/videos', [MediaController::class, 'videos'])->name('videos');
+    Route::get('/downloads', [DownloadController::class, 'index'])->name('downloads');
+    Route::get('/rule-book', [DownloadController::class, 'index'])->defaults('mode', 'rule-book')->name('rule-book');
 
-    Route::view('/community', 'frontend.community.index')->name('community.index');
-    Route::view('/community/{slug}', 'frontend.community.show')->name('community.show');
+    Route::get('/community', [CommunityController::class, 'index'])->name('community.index');
+    Route::get('/community/{slug}', [CommunityController::class, 'show'])->name('community.show');
 
     Route::view('/contact', 'frontend.contact')->name('contact');
-    Route::view('/privacy-policy', 'frontend.page', ['slug' => 'privacy-policy'])->name('legal.privacy');
-    Route::view('/terms-and-conditions', 'frontend.page', ['slug' => 'terms-and-conditions'])->name('legal.terms');
+    Route::get('/privacy-policy', PageController::class)->defaults('slug', 'privacy-policy')->name('legal.privacy');
+    Route::get('/terms-and-conditions', PageController::class)->defaults('slug', 'terms-and-conditions')->name('legal.terms');
 });

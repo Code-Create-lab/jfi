@@ -4,18 +4,11 @@
 @section('meta_description', 'Official website of the Jumpball Federation of India: championships, results, player registration and Player ID, certificate verification and state associations.')
 
 @php
-    $preview = isset($banners, $stats, $upcomingEvents, $announcements, $latestNews, $galleries, $internationalPlayers, $nationalBearers) ? null : (fn () => require resource_path('views/frontend/_preview-data.php'))();
-    $banners ??= $preview['banners'];
-    $stats ??= $preview['stats'];
-    $upcomingEvents ??= $preview['upcoming'];
-    $announcements ??= $preview['news']->where('type', App\Enums\NewsType::Announcement)->take(3);
-    $latestNews ??= $preview['news']->take(3);
-    $galleries ??= $preview['galleries'];
-    $internationalPlayers ??= $preview['internationalPlayers'];
-    $nationalBearers ??= $preview['nationalBearers'];
-    $nextEvent = $upcomingEvents->first();
     $highlightGallery = $galleries->first();
-    $slides = $banners->map(fn ($banner): string => Str::startsWith($banner->image, 'assets/') ? asset($banner->image) : Storage::url($banner->image))->values();
+    // Built-in photos until the federation adds banners in /admin/banners.
+    $slides = $banners->isNotEmpty()
+        ? $banners->map(fn ($banner): string => Str::startsWith($banner->image, 'assets/') ? asset($banner->image) : Storage::url($banner->image))->values()
+        : collect(config('jumpball.fallback_banners'))->map(fn (string $path): string => asset($path))->values();
     $img = fn (string $file): string => asset('assets/images/'.$file);
 
     $quickLinks = [
@@ -457,11 +450,17 @@ The next championship dates will be published here and in the official circulars
 <x-section-heading id="news-title" label="News & Updates" title="Latest from the Federation"/>
 <a class="jfi-btn jfi-btn-outline animate-box animate__animated" data-animate="animate__fadeInRight" href="{{ route('frontend.news.index') }}">All News <i aria-hidden="true" class="fa-solid fa-arrow-right"></i></a>
 </div>
+@if ($latestNews->isEmpty())
+<x-empty-state icon="fa-regular fa-newspaper" title="No news yet">
+Announcements and press releases from the federation office will appear here.
+</x-empty-state>
+@else
 <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
 @foreach ($latestNews as $item)
 <div class="col"><x-news-card :item="$item"/></div>
 @endforeach
 </div>
+@endif
 </div>
 </section>
 

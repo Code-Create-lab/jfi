@@ -2,8 +2,6 @@
 
 @php
     $activeType = App\Enums\NewsType::tryFrom((string) request('type'));
-    $news ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['news']
-        ->when($activeType, fn ($items) => $items->where('type', $activeType));
 @endphp
 
 @section('title', 'News & Press Releases')
@@ -36,14 +34,7 @@ Check back soon, or see all news from the federation.
 <div class="col"><x-news-card :item="$item"/></div>
 @endforeach
 </div>
-<nav aria-label="News pages">
-<ul class="jfi-pagination">
-<li><span aria-disabled="true">Previous</span></li>
-<li><span aria-current="page">1</span></li>
-<li><a href="{{ route('frontend.news.index', ['page' => 2]) }}">2</a></li>
-<li><a href="{{ route('frontend.news.index', ['page' => 2]) }}">Next</a></li>
-</ul>
-</nav>
+{{ $news->links() }}
 @endif
 </div>
 </section>

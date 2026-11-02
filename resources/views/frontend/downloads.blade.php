@@ -3,8 +3,6 @@
 @php
     $isRuleBook = ($mode ?? 'downloads') === 'rule-book';
     $activeCategory = $isRuleBook ? App\Enums\DownloadCategory::RuleBook : App\Enums\DownloadCategory::tryFrom((string) request('category'));
-    $downloads ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['downloads']
-        ->when($activeCategory, fn ($items) => $items->where('category', $activeCategory));
     $title = $isRuleBook ? 'Rule Book' : 'Downloads & Official Notices';
     $currentRuleBook = $isRuleBook ? $downloads->first() : null;
     $listed = $isRuleBook ? $downloads->slice(1) : $downloads;

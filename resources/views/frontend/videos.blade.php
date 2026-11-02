@@ -1,9 +1,5 @@
 @extends('layouts.frontend')
 
-@php
-    $videos ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['videos'];
-@endphp
-
 @section('title', 'Video Gallery')
 @section('meta_description', 'Videos from Jumpball Federation of India championships and events.')
 
@@ -19,7 +15,7 @@ Videos are added after each championship.
 @else
 <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
 @foreach ($videos as $video)
-@php($thumbnail = asset('assets/images/jfi/cover-'.(abs(crc32((string) $video->title)) % 6 + 1).'.webp'))
+@php($thumbnail = $video->thumbnail_url ?? asset('assets/images/jfi/cover-'.(abs(crc32((string) $video->title)) % 6 + 1).'.webp'))
 <div class="col">
 <article class="animate-box animate__animated" data-animate="animate__fadeInUp">
 @if ($video->embed_url)
@@ -43,6 +39,7 @@ Videos are added after each championship.
 </div>
 @endforeach
 </div>
+{{ $videos->links() }}
 @endif
 <div class="text-center mt-5">
 <a class="jfi-btn jfi-btn-outline" href="{{ route('frontend.gallery.index') }}"><i aria-hidden="true" class="fa-regular fa-images"></i> Photo Gallery</a>

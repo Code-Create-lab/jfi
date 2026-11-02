@@ -1,9 +1,5 @@
 @extends('layouts.frontend')
 
-@php
-    $categories ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['categories'];
-@endphp
-
 @section('title', 'Community & Awareness')
 @section('meta_description', 'Player safety, respectful conduct and awareness information from the Jumpball Federation of India.')
 
@@ -36,7 +32,7 @@ The federation office is preparing this information.
 <p>{{ $category->short_description }}</p>
 @endif
 <div class="card-footer-jfi d-flex flex-wrap justify-content-between align-items-center gap-2">
-<span class="text-slate small">{{ $category->posts->count() }} {{ Str::plural('guide', $category->posts->count()) }}</span>
+<span class="text-slate small">{{ $category->posts_count }} {{ Str::plural('guide', $category->posts_count) }}</span>
 <a class="jfi-link" href="{{ route('frontend.community.show', $category->slug) }}">Read more<span class="visually-hidden">: {{ $category->name }}</span> <i aria-hidden="true" class="fa-solid fa-arrow-right"></i></a>
 </div>
 </div>

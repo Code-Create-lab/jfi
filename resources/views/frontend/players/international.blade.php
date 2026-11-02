@@ -1,9 +1,5 @@
 @extends('layouts.frontend')
 
-@php
-    $internationalPlayers ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['internationalPlayers'];
-@endphp
-
 @section('title', 'International Players')
 @section('meta_description', 'International Jumpball players listed by the Jumpball Federation of India, grouped by country.')
 

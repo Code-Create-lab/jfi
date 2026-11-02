@@ -1,9 +1,5 @@
 @extends('layouts.frontend')
 
-@php
-    $contact ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['contact'];
-@endphp
-
 @section('title', 'Contact the Federation')
 @section('meta_description', 'Contact the Jumpball Federation of India national office.')
 
@@ -59,11 +55,30 @@
 <div class="side-card">
 <h2 class="side-card-title">National Office</h2>
 <ul class="meta-list">
-<li><i aria-hidden="true" class="fa-solid fa-location-dot"></i><span>{{ $contact['address'] }}</span></li>
+@if ($contact['address'])
+<li><i aria-hidden="true" class="fa-solid fa-location-dot"></i><span class="pre-line">{{ $contact['address'] }}</span></li>
+@endif
+@if ($contact['phone'])
 <li><i aria-hidden="true" class="fa-solid fa-phone"></i><a href="tel:{{ preg_replace('/[^0-9+]/', '', $contact['phone']) }}">{{ $contact['phone'] }}</a></li>
+@endif
+@if ($contact['email'])
 <li><i aria-hidden="true" class="fa-solid fa-envelope"></i><a href="mailto:{{ $contact['email'] }}">{{ $contact['email'] }}</a></li>
+@endif
 </ul>
+@if ($social)
+<ul class="social-links mt-3">
+@foreach ($social as $label => $link)
+<li><a aria-label="{{ $label }}" href="{{ $link['url'] }}" rel="noopener" target="_blank"><i aria-hidden="true" class="{{ $link['icon'] }}"></i></a></li>
+@endforeach
+</ul>
+@endif
 </div>
+@if ($contact['map_embed'])
+<div class="side-card map-embed">
+<h2 class="side-card-title">Find Us</h2>
+<iframe allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="{{ $contact['map_embed'] }}" title="Map to the federation office"></iframe>
+</div>
+@endif
 <div class="side-card">
 <h2 class="side-card-title">Quick Answers</h2>
 <ul class="side-nav">

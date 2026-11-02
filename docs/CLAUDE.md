@@ -226,8 +226,8 @@ Tick when received. We enter only 1–2 sample items per section; the client ent
 - Prefer the template's existing components over custom UI.
 - Every public listing (events, news, community, etc.) must be driven from the admin panel, not hard-coded.
 - Player ID, certificate number and verification code formats: see section 14.
-- **Frontend design stage:** every public page in section 4 (except the admin area) exists as a Blade view in `resources/views/frontend/`, with layout `layouts/frontend.blade.php`. Routes are `Route::view()` calls named `frontend.*`; navigation lives in `config('jumpball.navigation')`.
-- **Preview data:** views fall back to unsaved sample models from `resources/views/frontend/_preview-data.php` only when a variable is missing (`$events ??= ...`). When wiring controllers, pass the same variable names, then delete that file and the fallback lines. Forms post to `#` until the wiring step.
+- **Frontend:** every public page in section 4 (except the admin area) is a Blade view in `resources/views/frontend/` with layout `layouts/frontend.blade.php`; navigation lives in `config('jumpball.navigation')`. Content pages are served by controllers in `app/Http/Controllers/Frontend` (Phase 2A): every query uses `published()` (players: approved only; associations: `approved()`), relations are eager-loaded (`Model::preventLazyLoading()` is on outside production), long lists paginate with `partials/pagination.blade.php`, and unknown or unpublished slugs return 404. The five content pages use `PageController` with the slug passed as a route default. Contact details, social links, footer text and the default meta description come from settings through the view composer in `AppServiceProvider` (`$site`, `$contact`, `$social`). The home slideshow uses `config('jumpball.fallback_banners')` until a banner is published.
+- **Preview data:** only the not-yet-wired views still fall back to `resources/views/frontend/_preview-data.php` (Player Registration until 2B, Certificate verify until 3); those routes are still `Route::view()`. Delete the file and the fallback lines once no view uses it (Phase 4 at the latest). Forms post to `#` until their wiring phase.
 - **Styles:** brand overrides in `public/assets/css/jfi-theme.css`, page components in `public/assets/css/jfi-components.css`. Do not edit the template's `main.css`.
 - **Images:** generated brand graphics in `public/assets/images/jfi/` (cover-1..6 are the fallback covers when no image is uploaded; certificate sample is watermarked SAMPLE). A few photos and icons from the original template in `public/assets/images/` are placeholders on the home page, in preview data and in inner page banners (`config('jumpball.page_banners')`, route pattern => photo); replace them with client photos (section 11). Unused template images were removed; a local copy is in `storage/app/backups/` (git-ignored).
 - **Animations:** template scroll-in effect: add `animate-box animate__animated` plus `data-animate="animate__fadeInUp"` (handled by `script.js`). Shared components already do this; cards in a `.row` are staggered by CSS.
@@ -268,7 +268,7 @@ Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time
 
 **Update rules:** at the end of every phase, tick only items that work in the code, set "Current phase", add one line to the Log, and fix any section of this file the phase made outdated. Requests outside sections 4–6 go to "Change requests", never into the code.
 
-**Current phase:** 2A — Frontend: public pages on real data (next)
+**Current phase:** 2B — Frontend: contact and registration forms (next)
 
 ### Done before the phases
 - [x] Database layer: migrations, models, enums, `config/jumpball.php`, seeders (section 14)
@@ -287,9 +287,9 @@ Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time
 - [x] 1C Contact Messages, admin users + profile, dashboard widgets, navigation groups
 
 ### Phase 2 — Frontend wiring
-- [ ] 2A Home, static pages, office bearers, state associations
-- [ ] 2A Events, results, news, gallery, videos, downloads, rule book
-- [ ] 2A International players, community, public player list
+- [x] 2A Home, static pages, office bearers, state associations
+- [x] 2A Events, results, news, gallery, videos, downloads, rule book
+- [x] 2A International players, community, public player list
 - [ ] 2B Contact form
 - [ ] 2B State association registration + confirmation email
 - [ ] 2B Player registration + Player ID + confirmation email
@@ -330,3 +330,4 @@ Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time
 - 2026-11-02 — Phase 1A: State Associations admin (list/tabs/filters, form with logo + private documents, approve/reject + emails via shared traits, delete warning, approved-only association select for office bearers); DemoSeeder writes placeholder document PDFs. 70 tests green. Next: Phase 1B.
 - 2026-11-02 — Phase 1B: Events (period badge + scope filters, featured/published toggles) with Results relation manager, News, Downloads, Banners (reorderable), Pages (edit only), Site Settings page; `DeletesStoredFiles` trait; DemoSeeder now creates real sample images/PDFs. 81 tests green. Not browser-checked (needs admin login). Next: Phase 1C.
 - 2026-11-02 — Phase 1C: Galleries (+ batch photo upload, inline captions, reorder), Videos (YouTube/Vimeo/Facebook, `embed_url`, thumbnails), International Players (grouped by country), Community categories + posts (PDF), Contact Messages (read-only, unread badge), Admin Users + profile page, 5-stat dashboard with links, navigation groups. Phase 1 (admin panel) complete. 90 tests green. Not browser-checked (needs admin login). Next: Phase 2A.
+- 2026-11-02 — Phase 2A: public pages on real data via Frontend controllers (published/approved only, eager loading, pagination, 404 for unpublished slugs); settings view composer for contact, social links, footer and default meta; preventLazyLoading on outside production; home slideshow fallback photos. All 32 content URLs return 200 with demo data and on an empty database. 95 tests green. Next: Phase 2B.

@@ -1,7 +1,6 @@
 @extends('layouts.frontend')
 
 @php
-    $events ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())[$period];
     $pageCopy = [
         'current' => ['Current Events', 'Championships and federation events taking place today.'],
         'upcoming' => ['Upcoming Events', 'Dates, venues and entry details for the national calendar.'],
@@ -46,6 +45,7 @@ Dates are published here and in the official circulars as soon as they are confi
 <div class="col"><x-event-card :event="$event"/></div>
 @endforeach
 </div>
+{{ $events->links() }}
 @endif
 </div>
 </section>

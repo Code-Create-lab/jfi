@@ -5,13 +5,13 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <title>@yield('title', 'Jumpball Federation of India') | JFI</title>
-    <meta name="description" content="@yield('meta_description', 'Jumpball Federation of India is the national body for the development, competition and governance of Jumpball in India.')"/>
+    <meta name="description" content="@yield('meta_description', $site['meta_description'])"/>
     <meta name="theme-color" content="#0A2463"/>
     <link href="{{ url()->current() }}" rel="canonical"/>
     <meta property="og:type" content="website"/>
-    <meta property="og:site_name" content="Jumpball Federation of India"/>
+    <meta property="og:site_name" content="{{ $site['name'] }}"/>
     <meta property="og:title" content="@yield('title', 'Jumpball Federation of India')"/>
-    <meta property="og:description" content="@yield('meta_description', 'Jumpball Federation of India is the national body for the development, competition and governance of Jumpball in India.')"/>
+    <meta property="og:description" content="@yield('meta_description', $site['meta_description'])"/>
     <meta property="og:url" content="{{ url()->current() }}"/>
     <meta property="og:image" content="{{ asset('assets/images/jfi/og-default.jpg') }}"/>
     <meta name="twitter:card" content="summary_large_image"/>

@@ -2603,3 +2603,41 @@ input[type="file"].form-control-jfi::file-selector-button{
         max-width: 420px;
     }
 }
+
+/* ---------- Social links (footer, contact page) ---------- */
+.social-links{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 0;
+    list-style: none;
+}
+.social-links a{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    color: var(--jfi-navy);
+    transition: background-color .2s, color .2s;
+}
+.social-links a:hover,
+.social-links a:focus-visible{
+    background-color: var(--jfi-gold);
+    border-color: var(--jfi-gold);
+    color: var(--jfi-navy-900);
+}
+footer .social-links a{
+    color: rgba(255, 255, 255, .85);
+}
+
+/* ---------- Contact page map ---------- */
+.map-embed iframe{
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border: 0;
+    border-radius: var(--radius-md);
+}

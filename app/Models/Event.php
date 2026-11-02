@@ -116,6 +116,15 @@ class Event extends Model
     }
 
     /**
+     * Current and upcoming events: the last day is today or later.
+     */
+    #[Scope]
+    protected function notFinished(Builder $query): void
+    {
+        $query->whereRaw($this->lastDayExpression().' >= ?', [today()]);
+    }
+
+    /**
      * Events whose last day is before today.
      */
     #[Scope]

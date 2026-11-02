@@ -1,9 +1,5 @@
 @extends('layouts.frontend')
 
-@php
-    $galleries ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['galleries'];
-@endphp
-
 @section('title', 'Photo Gallery')
 @section('meta_description', 'Photos from Jumpball Federation of India championships and events.')
 
@@ -20,8 +16,7 @@ Photos are added after each championship.
 <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
 @foreach ($galleries as $gallery)
 @php
-    $firstImage = $gallery->images->first();
-    $coverPath = $gallery->cover_image ?? $firstImage?->image;
+    $coverPath = $gallery->cover_image ?: $gallery->first_image;
     $cover = $coverPath
         ? (Str::startsWith($coverPath, 'assets/') ? asset($coverPath) : Storage::url($coverPath))
         : asset('assets/images/jfi/cover-'.(abs(crc32((string) $gallery->slug)) % 6 + 1).'.webp');
@@ -30,7 +25,7 @@ Photos are added after each championship.
 <a class="album-card animate-box animate__animated" data-animate="animate__fadeInUp" href="{{ route('frontend.gallery.show', $gallery->slug) }}">
 <div class="album-card-media">
 <img alt="" height="480" loading="lazy" src="{{ $cover }}" width="640"/>
-<span class="album-card-count">{{ $gallery->images->count() }} {{ Str::plural('photo', $gallery->images->count()) }}</span>
+<span class="album-card-count">{{ $gallery->images_count }} {{ Str::plural('photo', $gallery->images_count) }}</span>
 </div>
 <h2 class="card-title-jfi">{{ $gallery->title }}</h2>
 <p class="album-card-meta">{{ $gallery->event ? $gallery->event->title.', '.$gallery->event->start_date->format('M Y') : 'Federation event' }}</p>
@@ -38,6 +33,7 @@ Photos are added after each championship.
 </div>
 @endforeach
 </div>
+{{ $galleries->links() }}
 @endif
 <div class="text-center mt-5">
 <a class="jfi-btn jfi-btn-outline" href="{{ route('frontend.videos') }}"><i aria-hidden="true" class="fa-solid fa-play"></i> Video Gallery</a>

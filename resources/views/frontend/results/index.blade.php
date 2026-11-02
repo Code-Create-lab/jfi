@@ -1,7 +1,6 @@
 @extends('layouts.frontend')
 
 @php
-    $events ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['previous'];
     $views = [
         0 => ['All Results', 'frontend.results.index', 'Championship Results', 'Official results and standings from national championships, entered by the federation office.'],
         1 => ['Winners', 'frontend.results.winners', 'Winners', 'First-place finishers in every category of every national championship.'],
@@ -55,6 +54,7 @@
 Results appear here once the federation office enters them after each championship.
 </x-empty-state>
 @endforelse
+{{ $events->links() }}
 @else
 @if ($placements->isEmpty())
 <x-empty-state icon="fa-solid fa-trophy" title="No results published yet">
@@ -78,6 +78,7 @@ Results appear here once the federation office enters them after each championsh
 </div>
 @endforeach
 </div>
+{{ $events->links() }}
 @endif
 @endif
 </div>

@@ -1,10 +1,5 @@
 @extends('layouts.frontend')
 
-@php
-    $gallery ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['galleries']->firstWhere('slug', $slug)
-        ?? ((fn () => require resource_path('views/frontend/_preview-data.php'))())['galleries']->first();
-@endphp
-
 @section('title', $gallery->title.' - Photos')
 @section('meta_description', 'Photos from '.$gallery->title.', Jumpball Federation of India.')
 

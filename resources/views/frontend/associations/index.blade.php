@@ -1,9 +1,5 @@
 @extends('layouts.frontend')
 
-@php
-    $associations ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['associations'];
-@endphp
-
 @section('title', 'Recognized State Associations')
 @section('meta_description', 'State associations recognized by the Jumpball Federation of India to organise Jumpball in their state.')
 

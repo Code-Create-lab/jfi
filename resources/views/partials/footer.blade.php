@@ -1,4 +1,3 @@
-@php($contact ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['contact'])
 <footer>
 <div class="section pb-0 bg-accent-color">
 <div class="hero-container">
@@ -10,10 +9,23 @@
 </div>
 <p class="secondary-accent mt-4 mb-0">The national governing body for Jumpball in India, responsible for competitions, player registration, certificates and the recognition of state associations.</p>
 <ul class="footer-contact">
-<li><i aria-hidden="true" class="fa-solid fa-location-dot"></i><span>{{ $contact['address'] }}</span></li>
+@if ($contact['address'])
+<li><i aria-hidden="true" class="fa-solid fa-location-dot"></i><span class="pre-line">{{ $contact['address'] }}</span></li>
+@endif
+@if ($contact['phone'])
 <li><i aria-hidden="true" class="fa-solid fa-phone"></i><a href="tel:{{ preg_replace('/[^0-9+]/', '', $contact['phone']) }}">{{ $contact['phone'] }}</a></li>
+@endif
+@if ($contact['email'])
 <li><i aria-hidden="true" class="fa-solid fa-envelope"></i><a href="mailto:{{ $contact['email'] }}">{{ $contact['email'] }}</a></li>
+@endif
 </ul>
+@if ($social)
+<ul class="social-links mt-4">
+@foreach ($social as $label => $link)
+<li><a aria-label="{{ $site['name'] }} on {{ $label }}" href="{{ $link['url'] }}" rel="noopener" target="_blank"><i aria-hidden="true" class="{{ $link['icon'] }}"></i></a></li>
+@endforeach
+</ul>
+@endif
 </div>
 <div class="col-6 col-md-4 col-lg-2 offset-lg-1">
 <h2 class="footer-heading">Federation</h2>
@@ -54,7 +66,7 @@
 <div class="divider"></div>
 <a class="legalink" href="{{ route('frontend.legal.terms') }}">Terms &amp; Conditions</a>
 </div>
-<p class="mb-0 footer-copyright">&copy; {{ date('Y') }} Jumpball Federation of India. All rights reserved.</p>
+<p class="mb-0 footer-copyright">&copy; {{ date('Y') }} {{ $site['footer_text'] }}</p>
 </div>
 </div>
 </div>

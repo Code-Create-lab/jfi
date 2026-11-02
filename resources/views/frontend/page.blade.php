@@ -1,7 +1,6 @@
 @extends('layouts.frontend')
 
 @php
-    $page ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['pages'][$slug];
     $isLegal = in_array($page->slug, ['privacy-policy', 'terms-and-conditions'], true);
     $sectionLinks = $isLegal
         ? ['Privacy Policy' => 'frontend.legal.privacy', 'Terms & Conditions' => 'frontend.legal.terms']

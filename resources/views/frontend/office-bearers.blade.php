@@ -2,8 +2,6 @@
 
 @php
     $isState = $level === 'state';
-    $preview = isset($bearers) ? null : (fn () => require resource_path('views/frontend/_preview-data.php'))();
-    $bearers ??= $isState ? $preview['stateBearers'] : $preview['nationalBearers'];
     $title = $isState ? 'State Office Bearers' : 'National Office Bearers';
 @endphp
 

@@ -1,9 +1,6 @@
 @extends('layouts.frontend')
 
 @php
-    $preview = isset($item, $recentNews) ? null : (fn () => require resource_path('views/frontend/_preview-data.php'))();
-    $item ??= $preview['news']->firstWhere('slug', $slug) ?? $preview['news']->first();
-    $recentNews ??= $preview['news']->reject(fn ($news) => $news->slug === $item->slug)->take(4);
     $image = $item->image
         ? Storage::url($item->image)
         : asset('assets/images/jfi/cover-'.(abs(crc32((string) $item->slug)) % 6 + 1).'.webp');

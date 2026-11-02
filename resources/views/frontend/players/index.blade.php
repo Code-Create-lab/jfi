@@ -1,11 +1,5 @@
 @extends('layouts.frontend')
 
-@php
-    $preview = isset($players, $associations) ? null : (fn () => require resource_path('views/frontend/_preview-data.php'))();
-    $players ??= $preview['players'];
-    $associations ??= $preview['associations'];
-@endphp
-
 @section('title', 'Player Database')
 @section('meta_description', 'Search registered Jumpball players by name or Player ID. Only approved players are listed.')
 
@@ -36,7 +30,7 @@
 Check the spelling or the Player ID format, for example JFI-2026-00001.
 </x-empty-state>
 @else
-<p class="text-slate mb-3" role="status">Showing {{ $players->count() }} {{ Str::plural('player', $players->count()) }}</p>
+<p class="text-slate mb-3" role="status">{{ number_format($players->total()) }} {{ Str::plural('player', $players->total()) }} found</p>
 <div class="table-scroll">
 <table class="jfi-table">
 <caption class="visually-hidden">Approved players</caption>
@@ -58,14 +52,7 @@ Check the spelling or the Player ID format, for example JFI-2026-00001.
 </tbody>
 </table>
 </div>
-<nav aria-label="Player list pages">
-<ul class="jfi-pagination">
-<li><span aria-disabled="true">Previous</span></li>
-<li><span aria-current="page">1</span></li>
-<li><a href="{{ route('frontend.players.index', ['page' => 2]) }}">2</a></li>
-<li><a href="{{ route('frontend.players.index', ['page' => 2]) }}">Next</a></li>
-</ul>
-</nav>
+{{ $players->links() }}
 @endif
 
 <div class="row g-4 mt-4">
