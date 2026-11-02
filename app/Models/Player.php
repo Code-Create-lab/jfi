@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * The Player Database. registration_no is the public Player ID and is
@@ -47,9 +48,43 @@ class Player extends Authenticatable
             $player->saveQuietly();
         });
 
+        static::updated(function (Player $player): void {
+            if ($player->wasChanged('photo') && $player->getOriginal('photo')) {
+                Storage::disk('local')->delete($player->getOriginal('photo'));
+            }
+        });
+
         static::deleting(function (Player $player): void {
             $player->documents()->get()->each->delete();
         });
+
+        static::deleted(function (Player $player): void {
+            if ($player->photo) {
+                Storage::disk('local')->delete($player->photo);
+            }
+        });
+    }
+
+    /**
+     * Approve the registration. Status and review fields are not mass assignable.
+     */
+    public function approve(?string $remarks = null): void
+    {
+        $this->status = RegistrationStatus::Approved;
+        $this->admin_remarks = $remarks;
+        $this->reviewed_at = now();
+        $this->save();
+    }
+
+    /**
+     * Reject the registration; the remarks are sent to the player.
+     */
+    public function reject(string $remarks): void
+    {
+        $this->status = RegistrationStatus::Rejected;
+        $this->admin_remarks = $remarks;
+        $this->reviewed_at = now();
+        $this->save();
     }
 
     /**

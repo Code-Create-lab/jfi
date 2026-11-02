@@ -27,6 +27,7 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use UnitEnum;
 
 class OfficeBearerResource extends Resource
 {
@@ -37,6 +38,8 @@ class OfficeBearerResource extends Resource
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $navigationLabel = 'Office Bearers';
+
+    protected static string|UnitEnum|null $navigationGroup = 'Federation';
 
     protected static ?int $navigationSort = 10;
 

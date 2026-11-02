@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\Players\PlayerResource;
 use App\Models\Player;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -26,6 +27,7 @@ class LatestPlayers extends TableWidget
                 TextColumn::make('status')->badge(),
                 TextColumn::make('created_at')->label('Submitted')->since(),
             ])
+            ->recordUrl(fn (Player $record): string => PlayerResource::getUrl('view', ['record' => $record]))
             ->paginated(false)
             ->emptyStateHeading('No player registrations yet');
     }

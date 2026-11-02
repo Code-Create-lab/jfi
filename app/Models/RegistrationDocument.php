@@ -17,6 +17,12 @@ class RegistrationDocument extends Model
 {
     protected static function booted(): void
     {
+        static::updated(function (RegistrationDocument $document): void {
+            if ($document->wasChanged('file_path') && $document->getOriginal('file_path')) {
+                Storage::disk('local')->delete($document->getOriginal('file_path'));
+            }
+        });
+
         static::deleted(function (RegistrationDocument $document): void {
             Storage::disk('local')->delete($document->file_path);
         });
