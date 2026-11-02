@@ -237,6 +237,7 @@ class DemoSeeder extends Seeder
         $safety->posts()->create([
             'title' => 'Safe Play Guidelines',
             'content' => '<p>Sample guidelines.</p>',
+            'document_path' => $this->samplePdf('community/documents/sample-safe-play-guidelines.pdf', 'Sample safe play guidelines', 'public'),
             'sort_order' => 1,
         ]);
 

@@ -78,9 +78,7 @@ class AdminPanelTest extends TestCase
         $this->get('/admin')->assertOk();
 
         Livewire::test(StatsOverview::class)
-            ->assertSee('Registered players')
-            ->assertSee('1 pending review')
-            ->assertSee('1 application pending');
+            ->assertSeeInOrder(['Pending players', '1', 'Approved players', '0', 'Pending associations', '1', 'Upcoming events', 'Unread messages']);
 
         Livewire::test(LatestPlayers::class)
             ->assertCanSeeTableRecords([$player])

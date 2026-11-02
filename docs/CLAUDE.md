@@ -203,7 +203,7 @@ Tick when received. We enter only 1–2 sample items per section; the client ent
 
 - Frontend/player: resource controllers + route model binding; name routes (`frontend.events.upcoming`). All validation in **FormRequest** classes, never inline in controllers.
 - Admin: one Filament resource per module in `app/Filament/Resources`; validation lives in the resource form schema (`->required()`, `->rules()`). Use the enums (they implement Filament `HasLabel`/`HasColor`) for selects and badges. Status/ID/review fields are set explicitly in actions (e.g. Approve/Reject), never through mass-assigned form data. Admin CSV export is a streamed `fputcsv` download action, not Filament's queued exporter. Admin file uploads for registration documents use the private `local` disk. Registration documents are downloaded through `RegistrationDocumentController` (admin panel authenticated route `filament.admin.registration-documents.download`). Approve/Reject: both registration models use the `Reviewable` trait (`approve($remarks)` / `reject($remarks)` set status, `admin_remarks`, `reviewed_at`), and both resources use the `App\Filament\Concerns\HasReviewActions` trait, which saves the status and then sends `RegistrationApproved` / `RegistrationRejected` (they accept a Player or a StateAssociation) synchronously; a mail failure is reported and shown as a warning but never undoes the status change. The Players and State Associations resources are the pattern for new admin modules. Selects of state associations outside the registration resources list approved associations only (`Fields::approvedAssociationSelect()`, `StateAssociation::approved()` scope).
-- Admin helpers: `App\Filament\Support\Fields` (`richText()` without file attachments — images go through each module's own upload field; `stateOptions()`; `approvedAssociationSelect()`). Models with uploads use the `DeletesStoredFiles` trait (`storedFiles()` lists attribute => disk) so replaced and deleted files are removed; paths under `assets/` are never deleted. Deleting an event deletes its results through the models. Pages are edit-only (fixed slugs); Site Settings (`App\Filament\Pages\SiteSettings`) edits only the seeded keys, and `map_embed` stores a Google Maps embed URL, not HTML.
+- Admin helpers: `App\Filament\Support\Fields` (`richText()` without file attachments — images go through each module's own upload field; `stateOptions()`; `approvedAssociationSelect()`). Models with uploads use the `DeletesStoredFiles` trait (`storedFiles()` lists attribute => disk) so replaced and deleted files are removed; paths under `assets/` are never deleted. Deleting an event deletes its results, a gallery its photos, and a community category its posts, through the models (so their files go too). Gallery photos are added with the "Upload photos" action (up to 20 per batch, resized in the browser to about 1600 px wide). Videos accept YouTube, Vimeo or Facebook links (`Video::URL_PATTERN`); use `$video->embed_url` and `$video->thumbnail_url` (YouTube only). Contact messages are read-only (viewing sets `read_at`). Admin users: every user is an admin; `UserPolicy` stops an admin deleting their own account and has no bulk delete; each admin edits their own name, email and password at `/admin/profile`. Navigation groups: Registrations, Federation, Events & Media, Content, Settings. Pages are edit-only (fixed slugs); Site Settings (`App\Filament\Pages\SiteSettings`) edits only the seeded keys, and `map_embed` stores a Google Maps embed URL, not HTML.
 - No Services, Repositories, DTOs or interfaces. Keep logic small, in model hooks/methods or the controller. Player ID and certificate numbers are generated in model `created` hooks.
 - Use enums/casts for statuses; never hard-code status strings in views.
 - Upcoming / current / previous events: `Event::upcoming()`, `current()`, `previous()` scopes on the dates (a null `end_date` means a single-day event). No status column, no cron job.
@@ -268,7 +268,7 @@ Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time
 
 **Update rules:** at the end of every phase, tick only items that work in the code, set "Current phase", add one line to the Log, and fix any section of this file the phase made outdated. Requests outside sections 4–6 go to "Change requests", never into the code.
 
-**Current phase:** 1C — Media, Community, Messages, Users, Dashboard (next)
+**Current phase:** 2A — Frontend: public pages on real data (next)
 
 ### Done before the phases
 - [x] Database layer: migrations, models, enums, `config/jumpball.php`, seeders (section 14)
@@ -282,9 +282,9 @@ Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time
 - [x] 1B Events + Results
 - [x] 1B News, Downloads, Banners
 - [x] 1B Pages (edit only), Site Settings
-- [ ] 1C Galleries + photos, Videos
-- [ ] 1C International Players, Community categories + posts
-- [ ] 1C Contact Messages, admin users + profile, dashboard widgets, navigation groups
+- [x] 1C Galleries + photos, Videos
+- [x] 1C International Players, Community categories + posts
+- [x] 1C Contact Messages, admin users + profile, dashboard widgets, navigation groups
 
 ### Phase 2 — Frontend wiring
 - [ ] 2A Home, static pages, office bearers, state associations
@@ -329,3 +329,4 @@ Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time
 - 2026-11-02 — Database layer, frontend design stage, Filament panel, Players and Office Bearers admin done. Next: Phase 1A.
 - 2026-11-02 — Phase 1A: State Associations admin (list/tabs/filters, form with logo + private documents, approve/reject + emails via shared traits, delete warning, approved-only association select for office bearers); DemoSeeder writes placeholder document PDFs. 70 tests green. Next: Phase 1B.
 - 2026-11-02 — Phase 1B: Events (period badge + scope filters, featured/published toggles) with Results relation manager, News, Downloads, Banners (reorderable), Pages (edit only), Site Settings page; `DeletesStoredFiles` trait; DemoSeeder now creates real sample images/PDFs. 81 tests green. Not browser-checked (needs admin login). Next: Phase 1C.
+- 2026-11-02 — Phase 1C: Galleries (+ batch photo upload, inline captions, reorder), Videos (YouTube/Vimeo/Facebook, `embed_url`, thumbnails), International Players (grouped by country), Community categories + posts (PDF), Contact Messages (read-only, unread badge), Admin Users + profile page, 5-stat dashboard with links, navigation groups. Phase 1 (admin panel) complete. 90 tests green. Not browser-checked (needs admin login). Next: Phase 2A.

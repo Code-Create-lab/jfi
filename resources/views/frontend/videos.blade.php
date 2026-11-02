@@ -22,8 +22,8 @@ Videos are added after each championship.
 @php($thumbnail = asset('assets/images/jfi/cover-'.(abs(crc32((string) $video->title)) % 6 + 1).'.webp'))
 <div class="col">
 <article class="animate-box animate__animated" data-animate="animate__fadeInUp">
-@if ($video->embedUrl())
-<button class="video-thumb" data-video-embed="{{ $video->embedUrl() }}" data-video-title="{{ $video->title }}" type="button">
+@if ($video->embed_url)
+<button class="video-thumb" data-video-embed="{{ $video->embed_url }}" data-video-title="{{ $video->title }}" type="button">
 <img alt="" height="360" loading="lazy" src="{{ $thumbnail }}" width="640"/>
 <span aria-hidden="true" class="video-play"><i class="fa-solid fa-play"></i></span>
 <span class="visually-hidden">Play video: {{ $video->title }}</span>

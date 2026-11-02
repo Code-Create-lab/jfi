@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DeletesStoredFiles;
 use App\Models\Concerns\Publishable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,15 @@ use Illuminate\Database\Eloquent\Model;
 #[Fillable(['name', 'country', 'photo', 'details', 'sort_order', 'is_published'])]
 class InternationalPlayer extends Model
 {
-    use Publishable;
+    use DeletesStoredFiles, Publishable;
+
+    /**
+     * @return array<string, string>
+     */
+    protected function storedFiles(): array
+    {
+        return ['photo' => 'public'];
+    }
 
     /**
      * Get the attributes that should be cast.

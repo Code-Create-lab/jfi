@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DeletesStoredFiles;
 use App\Models\Concerns\HasSlug;
 use App\Models\Concerns\Publishable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['community_category_id', 'title', 'slug', 'content', 'image', 'document_path', 'sort_order', 'is_published'])]
 class CommunityPost extends Model
 {
-    use HasSlug, Publishable;
+    use DeletesStoredFiles, HasSlug, Publishable;
 
     /**
      * @return BelongsTo<CommunityCategory, $this>
@@ -19,6 +20,14 @@ class CommunityPost extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(CommunityCategory::class, 'community_category_id');
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function storedFiles(): array
+    {
+        return ['image' => 'public', 'document_path' => 'public'];
     }
 
     /**

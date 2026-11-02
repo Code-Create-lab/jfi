@@ -4,13 +4,25 @@ namespace App\Models;
 
 use App\Models\Concerns\Publishable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * An embedded video. Only YouTube, Vimeo and Facebook links are accepted
+ * (see URL_PATTERN); the page embeds them through $video->embed_url.
+ */
 #[Fillable(['title', 'url', 'event_id', 'sort_order', 'is_published'])]
 class Video extends Model
 {
     use Publishable;
+
+    /**
+     * Accepted video links: YouTube, Vimeo or Facebook.
+     */
+    public const string URL_PATTERN = '~^https?://(www\.|m\.)?(youtube\.com|youtu\.be|vimeo\.com|player\.vimeo\.com|facebook\.com|fb\.watch)/~i';
+
+    private const string YOUTUBE_ID = '~(?:youtube\.com/(?:watch\?(?:.*&)?v=|embed/|shorts/|live/)|youtu\.be/)([\w-]{6,})~';
 
     /**
      * @return BelongsTo<Event, $this>
@@ -21,19 +33,48 @@ class Video extends Model
     }
 
     /**
-     * Embed URL for YouTube or Vimeo links; null for other providers.
+     * The YouTube video id, or null for other providers.
      */
-    public function embedUrl(): ?string
+    public function youtubeId(): ?string
     {
-        if (preg_match('~(?:youtube\.com/(?:watch\?v=|embed/|shorts/)|youtu\.be/)([\w-]{6,})~', $this->url, $matches)) {
-            return 'https://www.youtube-nocookie.com/embed/'.$matches[1];
-        }
+        return preg_match(self::YOUTUBE_ID, (string) $this->url, $matches) ? $matches[1] : null;
+    }
 
-        if (preg_match('~vimeo\.com/(?:video/)?(\d+)~', $this->url, $matches)) {
-            return 'https://player.vimeo.com/video/'.$matches[1];
-        }
+    /**
+     * Player URL for an iframe: YouTube (privacy-enhanced), Vimeo or
+     * Facebook; null when the link is not one of these.
+     *
+     * @return Attribute<?string, never>
+     */
+    protected function embedUrl(): Attribute
+    {
+        return Attribute::get(function (): ?string {
+            $url = (string) $this->url;
 
-        return null;
+            if ($id = $this->youtubeId()) {
+                return 'https://www.youtube-nocookie.com/embed/'.$id;
+            }
+
+            if (preg_match('~vimeo\.com/(?:video/)?(\d+)~', $url, $matches)) {
+                return 'https://player.vimeo.com/video/'.$matches[1];
+            }
+
+            if (preg_match('~^https?://(www\.|m\.)?(facebook\.com|fb\.watch)/~i', $url)) {
+                return 'https://www.facebook.com/plugins/video.php?href='.rawurlencode($url).'&show_text=false';
+            }
+
+            return null;
+        });
+    }
+
+    /**
+     * YouTube thumbnail; null for other providers.
+     *
+     * @return Attribute<?string, never>
+     */
+    protected function thumbnailUrl(): Attribute
+    {
+        return Attribute::get(fn (): ?string => ($id = $this->youtubeId()) ? 'https://i.ytimg.com/vi/'.$id.'/hqdefault.jpg' : null);
     }
 
     /**

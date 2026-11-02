@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->profile(isSimple: false)
             ->brandName('Jumpball Federation of India')
             ->brandLogo(asset('assets/images/jfi-logo.png'))
             ->brandLogoHeight('2.75rem')

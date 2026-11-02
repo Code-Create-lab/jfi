@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DeletesStoredFiles;
 use App\Models\Concerns\HasSlug;
 use App\Models\Concerns\Publishable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -15,7 +16,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['name', 'slug', 'short_description', 'description', 'image', 'support_contact', 'sort_order', 'is_published'])]
 class CommunityCategory extends Model
 {
-    use HasSlug, Publishable;
+    use DeletesStoredFiles, HasSlug, Publishable;
+
+    protected static function booted(): void
+    {
+        // Through the models (not only the FK cascade) so their files are deleted too.
+        static::deleting(function (CommunityCategory $model): void {
+            $model->posts()->get()->each->delete();
+        });
+    }
 
     /**
      * @return HasMany<CommunityPost, $this>
@@ -23,6 +32,14 @@ class CommunityCategory extends Model
     public function posts(): HasMany
     {
         return $this->hasMany(CommunityPost::class);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function storedFiles(): array
+    {
+        return ['image' => 'public'];
     }
 
     /**
