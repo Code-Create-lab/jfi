@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\StateAssociations\StateAssociationResource;
 use App\Models\StateAssociation;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -25,6 +26,7 @@ class LatestAssociations extends TableWidget
                 TextColumn::make('status')->badge(),
                 TextColumn::make('created_at')->label('Submitted')->since(),
             ])
+            ->recordUrl(fn (StateAssociation $record): string => StateAssociationResource::getUrl('view', ['record' => $record]))
             ->paginated(false)
             ->emptyStateHeading('No association applications yet');
     }

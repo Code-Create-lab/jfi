@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Gender;
 use App\Enums\RegistrationStatus;
+use App\Models\Concerns\Reviewable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,7 +25,7 @@ use Illuminate\Support\Facades\Storage;
 #[Hidden(['password', 'remember_token'])]
 class Player extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, Reviewable;
 
     /**
      * Mirrors the database default so a new model reports "pending" before it is refreshed.
@@ -63,28 +64,6 @@ class Player extends Authenticatable
                 Storage::disk('local')->delete($player->photo);
             }
         });
-    }
-
-    /**
-     * Approve the registration. Status and review fields are not mass assignable.
-     */
-    public function approve(?string $remarks = null): void
-    {
-        $this->status = RegistrationStatus::Approved;
-        $this->admin_remarks = $remarks;
-        $this->reviewed_at = now();
-        $this->save();
-    }
-
-    /**
-     * Reject the registration; the remarks are sent to the player.
-     */
-    public function reject(string $remarks): void
-    {
-        $this->status = RegistrationStatus::Rejected;
-        $this->admin_remarks = $remarks;
-        $this->reviewed_at = now();
-        $this->save();
     }
 
     /**

@@ -2,6 +2,7 @@
 
 This file tells Claude Code what this project is, what is in scope, and what must NOT be built.
 Source of truth: `10xCart_Jumpball_Federation_Quotation_27000.pdf` (fixed-scope quotation, ₹27,000, 45 days).
+Progress tracker: section 15 (update it after every phase). Phase-by-phase prompts: `docs/PHASES.md`.
 
 ---
 
@@ -32,6 +33,7 @@ Source of truth: `10xCart_Jumpball_Federation_Quotation_27000.pdf` (fixed-scope 
 ```
 /
 ├── CLAUDE.md
+├── docs/                        # PHASES.md (phase prompts); later DEPLOYMENT.md, admin-guide.md, qa-checklist.md
 ├── app/
 │   ├── Http/
 │   │   ├── Controllers/
@@ -162,7 +164,7 @@ Source of truth: `10xCart_Jumpball_Federation_Quotation_27000.pdf` (fixed-scope 
 - Fully custom design
 - Bulk data entry / historical data import (seed only 1–2 sample records per section)
 
-If a requested change falls in this list or isn't in sections 4–6, flag it as **change request** (separate scope/pricing) instead of implementing it.
+If a requested change falls in this list or isn't in sections 4–6, flag it as **change request** (separate scope/pricing) and log it in section 15 instead of implementing it.
 
 ## 10. Timeline (45 days, starts after advance + content received)
 
@@ -181,17 +183,31 @@ If a requested change falls in this list or isn't in sections 4–6, flag it as 
 
 ## 11. Client-Provided Inputs (blockers if missing)
 
-Website text, event details, office bearer info, state association info, player data, images, video links, official documents, privacy/terms text, approved certificate design, registration field list, SMTP credentials, hosting/domain access.
+Tick when received. We enter only 1–2 sample items per section; the client enters the rest through `/admin`.
+
+- [ ] Website text (about, history, objectives, mission/vision, about Jumpball, president message)
+- [ ] Event details and results
+- [x] National office bearers (in `config('jumpball.national_bearers')`)
+- [ ] State association info and state office bearers
+- [ ] Player data (players register themselves; the client manages the rest in `/admin`)
+- [ ] Images: client photos to replace the template placeholders
+- [ ] Video links
+- [ ] Official documents (rule book, circulars, forms, notices)
+- [ ] Privacy policy and terms text
+- [ ] Approved certificate design + signatures/seal (needed for Phase 3)
+- [ ] Final registration field list + document types (needed for Phase 2B)
+- [ ] SMTP credentials (needed to test real emails before go-live)
+- [ ] Hosting/domain access: the host must run PHP 8.3+ and MySQL/MariaDB (confirm early, not at deployment)
 
 ## 12. Laravel Conventions
 
 - Frontend/player: resource controllers + route model binding; name routes (`frontend.events.upcoming`). All validation in **FormRequest** classes, never inline in controllers.
-- Admin: one Filament resource per module in `app/Filament/Resources`; validation lives in the resource form schema (`->required()`, `->rules()`). Use the enums (they implement Filament `HasLabel`/`HasColor`) for selects and badges. Status/ID/review fields are set explicitly in actions (e.g. Approve/Reject), never through mass-assigned form data. Admin CSV export is a streamed `fputcsv` download action, not Filament's queued exporter. Admin file uploads for registration documents use the private `local` disk. Registration documents are downloaded through `RegistrationDocumentController` (admin panel authenticated route `filament.admin.registration-documents.download`). Approve/Reject actions call `Player::approve()` / `reject()` and then send `RegistrationApproved` / `RegistrationRejected` synchronously; a mail failure is reported and shown as a warning but never undoes the status change. The Players resource (`app/Filament/Resources/Players`) is the pattern for the State Associations module.
+- Admin: one Filament resource per module in `app/Filament/Resources`; validation lives in the resource form schema (`->required()`, `->rules()`). Use the enums (they implement Filament `HasLabel`/`HasColor`) for selects and badges. Status/ID/review fields are set explicitly in actions (e.g. Approve/Reject), never through mass-assigned form data. Admin CSV export is a streamed `fputcsv` download action, not Filament's queued exporter. Admin file uploads for registration documents use the private `local` disk. Registration documents are downloaded through `RegistrationDocumentController` (admin panel authenticated route `filament.admin.registration-documents.download`). Approve/Reject: both registration models use the `Reviewable` trait (`approve($remarks)` / `reject($remarks)` set status, `admin_remarks`, `reviewed_at`), and both resources use the `App\Filament\Concerns\HasReviewActions` trait, which saves the status and then sends `RegistrationApproved` / `RegistrationRejected` (they accept a Player or a StateAssociation) synchronously; a mail failure is reported and shown as a warning but never undoes the status change. The Players and State Associations resources are the pattern for new admin modules. Selects of state associations outside the registration resources list approved associations only.
 - No Services, Repositories, DTOs or interfaces. Keep logic small, in model hooks/methods or the controller. Player ID and certificate numbers are generated in model `created` hooks.
 - Use enums/casts for statuses; never hard-code status strings in views.
 - Upcoming / current / previous events: `Event::upcoming()`, `current()`, `previous()` scopes on the dates (a null `end_date` means a single-day event). No status column, no cron job.
 - Every frontend query on public content uses the `published()` scope (`Publishable` trait).
-- Registration documents and certificate PDFs: private `local` disk, served only via a controller that checks auth (admin, or the owning player). Public certificate lookup requires Player ID + date of birth, approved players only.
+- Registration documents and certificate PDFs: private `local` disk, served only via a controller that checks auth (admin, or the owning player; certificate PDFs also through a short-lived signed link after a successful public lookup). Public certificate lookup requires Player ID + date of birth, approved players only.
 - Player ID (`players.registration_no`) is built from the auto-increment id right after insert, so it cannot collide; the column also has a unique index.
 - Passwords use the `hashed` cast (assign the plain value); throttle login routes (`throttle:login`).
 - Mass assignment via `#[Fillable]`, excluding the status/ID/review fields listed in section 14. Eager-load to avoid N+1, paginate admin lists.
@@ -202,6 +218,7 @@ Website text, event details, office bearer info, state association info, player 
 
 ## 13. Working Notes for Claude Code
 
+- **Progress:** check section 15 before starting work and update it at the end of every phase (rules in `docs/PHASES.md`).
 - Keep it simple and maintainable — the client manages content after handover via the admin panel.
 - Don't add packages beyond those in section 2 without a clear reason; prefer plain Laravel (Filament plugins count as packages).
 - Filament assets are published to `public/{css,js,fonts}/filament` by `php artisan filament:upgrade` (runs on `composer install`) and are git-ignored. When deploying without Composer on the server, run `php artisan filament:assets` before uploading.
@@ -236,10 +253,77 @@ Website text, event details, office bearer info, state association info, player 
 
 ### Privacy
 
-- Registration documents and certificate PDFs live on the private `local` disk; serve them only through a controller that checks for the admin or the owning player.
+- Registration documents and certificate PDFs live on the private `local` disk; serve them only through a controller that checks for the admin or the owning player (certificate PDFs also through a short-lived signed link after a successful public lookup).
 - The public player list shows only approved players' name, Player ID and state association. Never show date of birth, phone, email or address.
 - Public certificate lookup requires Player ID + date of birth.
 
 ### Out of scope
 
 Payment gateway, SMS/WhatsApp, roles/permissions, Aadhaar, complaint/case management, bulk certificates, live scoring, tournament scheduling, multilingual, third-party integrations, APIs.
+
+## 15. Build Progress
+
+Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time with the "Progress check" in that file.
+
+**Update rules:** at the end of every phase, tick only items that work in the code, set "Current phase", add one line to the Log, and fix any section of this file the phase made outdated. Requests outside sections 4–6 go to "Change requests", never into the code.
+
+**Current phase:** 1B — Events, Results, News, Downloads, Banners, Pages, Settings (next)
+
+### Done before the phases
+- [x] Database layer: migrations, models, enums, `config/jumpball.php`, seeders (section 14)
+- [x] Frontend design stage: Blade views for all public pages with preview data (section 13)
+- [x] Filament panel at `/admin` with JFI branding
+- [x] Admin: Players (search/edit, approve/reject + emails, CSV export, document downloads)
+- [x] Admin: Office Bearers
+
+### Phase 1 — Admin panel
+- [x] 1A State Associations (approve/reject + emails, documents)
+- [ ] 1B Events + Results
+- [ ] 1B News, Downloads, Banners
+- [ ] 1B Pages (edit only), Site Settings
+- [ ] 1C Galleries + photos, Videos
+- [ ] 1C International Players, Community categories + posts
+- [ ] 1C Contact Messages, admin users + profile, dashboard widgets, navigation groups
+
+### Phase 2 — Frontend wiring
+- [ ] 2A Home, static pages, office bearers, state associations
+- [ ] 2A Events, results, news, gallery, videos, downloads, rule book
+- [ ] 2A International players, community, public player list
+- [ ] 2B Contact form
+- [ ] 2B State association registration + confirmation email
+- [ ] 2B Player registration + Player ID + confirmation email
+
+> Milestone: demo core pages + backend to the client → 2nd payment (40%).
+
+### Phase 3 — Certificates
+- [ ] dompdf + QR installed, one certificate template
+- [ ] Admin: issue, download, regenerate (one at a time)
+- [ ] Public lookup (Player ID + date of birth) and verify page
+
+### Phase 4 — Player area
+- [ ] `player` guard, login (email or Player ID), logout, throttle
+- [ ] Forgot / reset password
+- [ ] Dashboard: details, status/remarks, own certificates; `_preview-data.php` deleted
+
+### Phase 5 — Polish
+- [ ] Branded emails, SEO meta, error pages, favicon
+- [ ] Responsive + performance pass
+
+### Phase 6 — Testing and client review
+- [ ] Feature tests green
+- [ ] Scope audit (sections 4–6) + `docs/qa-checklist.md`
+- [ ] Client review round done
+
+> Milestone: final payment (20%) before handover.
+
+### Phase 7 — Deployment and handover
+- [ ] Live on client hosting, smoke test passed
+- [ ] `docs/DEPLOYMENT.md` + `docs/admin-guide.md`
+- [ ] Source + database handed over; warranty end date in the Log
+
+### Change requests (outside the ₹27,000 scope — quote separately)
+- None yet.
+
+### Log
+- 2026-11-02 — Database layer, frontend design stage, Filament panel, Players and Office Bearers admin done. Next: Phase 1A.
+- 2026-11-02 — Phase 1A: State Associations admin (list/tabs/filters, form with logo + private documents, approve/reject + emails via shared traits, delete warning, approved-only association select for office bearers); DemoSeeder writes placeholder document PDFs. 70 tests green. Next: Phase 1B.

@@ -18,11 +18,14 @@ use App\Models\OfficeBearer;
 use App\Models\Player;
 use App\Models\StateAssociation;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * One or two sample rows per table for local development and demos.
  * Not called from DatabaseSeeder: php artisan db:seed --class=DemoSeeder
- * File paths point to placeholders that do not exist on disk.
+ * Registration documents get small placeholder PDFs on the private disk so
+ * downloads work in /admin; other file paths point to placeholders that do
+ * not exist on disk.
  */
 class DemoSeeder extends Seeder
 {
@@ -48,17 +51,25 @@ class DemoSeeder extends Seeder
 
         $association->documents()->create([
             'document_type' => 'registration_certificate',
-            'file_path' => 'registration-documents/sample-registration-certificate.pdf',
+            'file_path' => $this->samplePdf('registration-documents/associations/sample-registration-certificate.pdf', 'Sample society registration certificate'),
             'original_name' => 'registration-certificate.pdf',
         ]);
 
-        StateAssociation::query()->create([
+        // Pending application, to try Approve / Reject in /admin.
+        $pendingAssociation = StateAssociation::query()->create([
             'name' => 'Karnataka Jumpball Association',
             'state' => 'Karnataka',
             'city' => 'Bengaluru',
             'email' => 'karnataka@example.com',
             'phone' => '+91 00000 00002',
+            'president_name' => 'Sample President',
             'terms_accepted_at' => now(),
+        ]);
+
+        $pendingAssociation->documents()->create([
+            'document_type' => 'authorization_letter',
+            'file_path' => $this->samplePdf('registration-documents/associations/sample-authorization-letter.pdf', 'Sample authorization letter'),
+            'original_name' => 'authorization-letter.pdf',
         ]);
 
         $player = new Player([
@@ -80,7 +91,7 @@ class DemoSeeder extends Seeder
 
         $player->documents()->create([
             'document_type' => 'id_proof',
-            'file_path' => 'registration-documents/sample-id-proof.pdf',
+            'file_path' => $this->samplePdf('registration-documents/players/sample-id-proof.pdf', 'Sample ID proof'),
             'original_name' => 'id-proof.pdf',
         ]);
 
@@ -245,5 +256,43 @@ class DemoSeeder extends Seeder
             'subject' => 'Registration query',
             'message' => 'Sample message asking how to register a district team.',
         ]);
+    }
+
+    /**
+     * Writes a one-page placeholder PDF to the private disk and returns its path.
+     */
+    private function samplePdf(string $path, string $title): string
+    {
+        $text = str_replace(['\\', '(', ')'], ['\\\\', '\\(', '\\)'], $title.' - demo file');
+        $stream = "BT /F1 18 Tf 72 720 Td ({$text}) Tj ET";
+
+        $objects = [
+            '<< /Type /Catalog /Pages 2 0 R >>',
+            '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+            '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>',
+            '<< /Length '.strlen($stream)." >>\nstream\n{$stream}\nendstream",
+            '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+        ];
+
+        $pdf = "%PDF-1.4\n";
+        $offsets = [];
+
+        foreach ($objects as $index => $object) {
+            $offsets[] = strlen($pdf);
+            $pdf .= ($index + 1)." 0 obj\n{$object}\nendobj\n";
+        }
+
+        $xref = strlen($pdf);
+        $pdf .= 'xref'."\n0 ".(count($objects) + 1)."\n0000000000 65535 f \n";
+
+        foreach ($offsets as $offset) {
+            $pdf .= sprintf("%010d 00000 n \n", $offset);
+        }
+
+        $pdf .= 'trailer << /Size '.(count($objects) + 1)." /Root 1 0 R >>\nstartxref\n{$xref}\n%%EOF";
+
+        Storage::disk('local')->put($path, $pdf);
+
+        return $path;
     }
 }

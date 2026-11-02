@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\OfficeBearers;
 
 use App\Enums\BearerLevel;
+use App\Enums\RegistrationStatus;
 use App\Filament\Resources\OfficeBearers\Pages\CreateOfficeBearer;
 use App\Filament\Resources\OfficeBearers\Pages\EditOfficeBearer;
 use App\Filament\Resources\OfficeBearers\Pages\ListOfficeBearers;
@@ -64,7 +65,17 @@ class OfficeBearerResource extends Resource
                             ->live(),
                         Select::make('state_association_id')
                             ->label('State association')
-                            ->relationship('stateAssociation', 'name')
+                            ->relationship(
+                                'stateAssociation',
+                                'name',
+                                // Approved associations only; keep the current one selectable when editing.
+                                fn (Builder $query, ?OfficeBearer $record) => $query->where(
+                                    fn (Builder $query) => $query
+                                        ->where('status', RegistrationStatus::Approved)
+                                        ->when($record?->state_association_id, fn (Builder $query, int $id) => $query->orWhereKey($id)),
+                                ),
+                            )
+                            ->helperText('Only approved associations are listed.')
                             ->searchable()
                             ->preload()
                             ->visible(fn (Get $get): bool => self::isState($get('level')))
