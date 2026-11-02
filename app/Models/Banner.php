@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DeletesStoredFiles;
 use App\Models\Concerns\Publishable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +10,15 @@ use Illuminate\Database\Eloquent\Model;
 #[Fillable(['title', 'subtitle', 'image', 'button_text', 'button_url', 'sort_order', 'is_published'])]
 class Banner extends Model
 {
-    use Publishable;
+    use DeletesStoredFiles, Publishable;
+
+    /**
+     * @return array<string, string>
+     */
+    protected function storedFiles(): array
+    {
+        return ['image' => 'public'];
+    }
 
     /**
      * Get the attributes that should be cast.

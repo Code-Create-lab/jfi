@@ -38,7 +38,7 @@ class AdminPanelProvider extends PanelProvider
                 'gray' => Color::Slate,
             ])
             ->sidebarCollapsibleOnDesktop()
-            ->navigationGroups(['Registrations', 'Federation'])
+            ->navigationGroups(['Registrations', 'Federation', 'Events & Media', 'Content', 'Settings'])
             ->authenticatedRoutes(function (): void {
                 Route::get('registration-documents/{document}', RegistrationDocumentController::class)
                     ->name('registration-documents.download');

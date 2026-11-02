@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-enum DownloadCategory: string
+use Filament\Support\Contracts\HasLabel;
+
+enum DownloadCategory: string implements HasLabel
 {
     case RuleBook = 'rule_book';
     case Circular = 'circular';
@@ -19,5 +21,10 @@ enum DownloadCategory: string
             self::Form => 'Form',
             self::Document => 'Document',
         };
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label();
     }
 }

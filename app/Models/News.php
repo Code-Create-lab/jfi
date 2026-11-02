@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\NewsType;
+use App\Models\Concerns\DeletesStoredFiles;
 use App\Models\Concerns\HasSlug;
 use App\Models\Concerns\Publishable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -11,7 +12,15 @@ use Illuminate\Database\Eloquent\Model;
 #[Fillable(['title', 'slug', 'type', 'excerpt', 'content', 'image', 'published_on', 'is_published'])]
 class News extends Model
 {
-    use HasSlug, Publishable;
+    use DeletesStoredFiles, HasSlug, Publishable;
+
+    /**
+     * @return array<string, string>
+     */
+    protected function storedFiles(): array
+    {
+        return ['image' => 'public'];
+    }
 
     /**
      * Get the attributes that should be cast.

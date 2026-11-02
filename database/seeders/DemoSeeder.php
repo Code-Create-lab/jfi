@@ -23,9 +23,9 @@ use Illuminate\Support\Facades\Storage;
 /**
  * One or two sample rows per table for local development and demos.
  * Not called from DatabaseSeeder: php artisan db:seed --class=DemoSeeder
- * Registration documents get small placeholder PDFs on the private disk so
- * downloads work in /admin; other file paths point to placeholders that do
- * not exist on disk.
+ * Uploaded files are real: images are copies of the JFI fallback covers on
+ * the public disk, documents are small placeholder PDFs (registration
+ * documents on the private disk, downloads on the public disk).
  */
 class DemoSeeder extends Seeder
 {
@@ -117,6 +117,7 @@ class DemoSeeder extends Seeder
             'state' => 'Delhi',
             'start_date' => today()->addMonths(2),
             'end_date' => today()->addMonths(2)->addDays(2),
+            'cover_image' => $this->sampleImage('events/sample-senior-nationals.webp', 'cover-1.webp'),
             'is_featured' => true,
         ]);
 
@@ -129,6 +130,7 @@ class DemoSeeder extends Seeder
             'state' => 'Maharashtra',
             'start_date' => today()->subMonths(3),
             'end_date' => today()->subMonths(3)->addDays(2),
+            'cover_image' => $this->sampleImage('events/sample-junior-nationals.webp', 'cover-3.webp'),
         ]);
 
         $previousEvent->results()->createMany([
@@ -152,8 +154,8 @@ class DemoSeeder extends Seeder
         ]);
 
         $gallery->images()->createMany([
-            ['image' => 'gallery/sample-1.jpg', 'caption' => 'Opening ceremony', 'sort_order' => 1],
-            ['image' => 'gallery/sample-2.jpg', 'caption' => 'Junior Boys final', 'sort_order' => 2],
+            ['image' => $this->sampleImage('gallery/sample-1.webp', 'cover-4.webp'), 'caption' => 'Opening ceremony', 'sort_order' => 1],
+            ['image' => $this->sampleImage('gallery/sample-2.webp', 'cover-5.webp'), 'caption' => 'Junior Boys final', 'sort_order' => 2],
         ]);
 
         $previousEvent->videos()->create([
@@ -172,9 +174,9 @@ class DemoSeeder extends Seeder
         Banner::query()->create([
             'title' => 'Raising the Game Across India',
             'subtitle' => 'National championships, athlete registration and coaching pathways.',
-            'image' => 'banners/sample-banner.jpg',
+            'image' => $this->sampleImage('banners/sample-banner.webp', 'cover-2.webp'),
             'button_text' => 'Register',
-            'button_url' => '/membership',
+            'button_url' => '/players/register',
             'sort_order' => 1,
         ]);
 
@@ -182,6 +184,7 @@ class DemoSeeder extends Seeder
             'title' => 'National Championship Calendar Announced',
             'type' => NewsType::Announcement,
             'excerpt' => 'Dates and host states for the coming season.',
+            'image' => $this->sampleImage('news/sample-calendar.webp', 'cover-6.webp'),
             'content' => '<p>Sample news content.</p>',
             'published_on' => today()->subDays(7),
         ]);
@@ -198,14 +201,14 @@ class DemoSeeder extends Seeder
             'title' => 'Official Rule Book',
             'category' => DownloadCategory::RuleBook,
             'description' => 'Sample rule book entry.',
-            'file_path' => 'downloads/sample-rule-book.pdf',
+            'file_path' => $this->samplePdf('downloads/sample-rule-book.pdf', 'Sample rule book', 'public'),
             'published_on' => today()->subDays(7),
         ]);
 
         Download::query()->create([
             'title' => 'Championship Entry Circular',
             'category' => DownloadCategory::Circular,
-            'file_path' => 'downloads/sample-circular.pdf',
+            'file_path' => $this->samplePdf('downloads/sample-circular.pdf', 'Sample circular', 'public'),
             'published_on' => today()->subDays(7),
         ]);
 
@@ -259,9 +262,19 @@ class DemoSeeder extends Seeder
     }
 
     /**
-     * Writes a one-page placeholder PDF to the private disk and returns its path.
+     * Copies a JFI fallback cover to the public disk and returns its path.
      */
-    private function samplePdf(string $path, string $title): string
+    private function sampleImage(string $path, string $cover): string
+    {
+        Storage::disk('public')->put($path, file_get_contents(public_path('assets/images/jfi/'.$cover)));
+
+        return $path;
+    }
+
+    /**
+     * Writes a one-page placeholder PDF and returns its path.
+     */
+    private function samplePdf(string $path, string $title, string $disk = 'local'): string
     {
         $text = str_replace(['\\', '(', ')'], ['\\\\', '\\(', '\\)'], $title.' - demo file');
         $stream = "BT /F1 18 Tf 72 720 Td ({$text}) Tj ET";
@@ -291,7 +304,7 @@ class DemoSeeder extends Seeder
 
         $pdf .= 'trailer << /Size '.(count($objects) + 1)." /Root 1 0 R >>\nstartxref\n{$xref}\n%%EOF";
 
-        Storage::disk('local')->put($path, $pdf);
+        Storage::disk($disk)->put($path, $pdf);
 
         return $path;
     }

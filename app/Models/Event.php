@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DeletesStoredFiles;
 use App\Models\Concerns\HasSlug;
 use App\Models\Concerns\Publishable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -16,7 +17,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class Event extends Model
 {
-    use HasSlug, Publishable;
+    use DeletesStoredFiles, HasSlug, Publishable;
+
+    protected static function booted(): void
+    {
+        // Through the models (not only the FK cascade) so result photos are deleted too.
+        static::deleting(function (Event $event): void {
+            $event->results()->get()->each->delete();
+        });
+    }
 
     /**
      * @return HasMany<EventResult, $this>
@@ -113,6 +122,14 @@ class Event extends Model
     protected function previous(Builder $query): void
     {
         $query->whereRaw($this->lastDayExpression().' < ?', [today()]);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function storedFiles(): array
+    {
+        return ['cover_image' => 'public'];
     }
 
     /**

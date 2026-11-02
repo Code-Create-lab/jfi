@@ -202,7 +202,8 @@ Tick when received. We enter only 1–2 sample items per section; the client ent
 ## 12. Laravel Conventions
 
 - Frontend/player: resource controllers + route model binding; name routes (`frontend.events.upcoming`). All validation in **FormRequest** classes, never inline in controllers.
-- Admin: one Filament resource per module in `app/Filament/Resources`; validation lives in the resource form schema (`->required()`, `->rules()`). Use the enums (they implement Filament `HasLabel`/`HasColor`) for selects and badges. Status/ID/review fields are set explicitly in actions (e.g. Approve/Reject), never through mass-assigned form data. Admin CSV export is a streamed `fputcsv` download action, not Filament's queued exporter. Admin file uploads for registration documents use the private `local` disk. Registration documents are downloaded through `RegistrationDocumentController` (admin panel authenticated route `filament.admin.registration-documents.download`). Approve/Reject: both registration models use the `Reviewable` trait (`approve($remarks)` / `reject($remarks)` set status, `admin_remarks`, `reviewed_at`), and both resources use the `App\Filament\Concerns\HasReviewActions` trait, which saves the status and then sends `RegistrationApproved` / `RegistrationRejected` (they accept a Player or a StateAssociation) synchronously; a mail failure is reported and shown as a warning but never undoes the status change. The Players and State Associations resources are the pattern for new admin modules. Selects of state associations outside the registration resources list approved associations only.
+- Admin: one Filament resource per module in `app/Filament/Resources`; validation lives in the resource form schema (`->required()`, `->rules()`). Use the enums (they implement Filament `HasLabel`/`HasColor`) for selects and badges. Status/ID/review fields are set explicitly in actions (e.g. Approve/Reject), never through mass-assigned form data. Admin CSV export is a streamed `fputcsv` download action, not Filament's queued exporter. Admin file uploads for registration documents use the private `local` disk. Registration documents are downloaded through `RegistrationDocumentController` (admin panel authenticated route `filament.admin.registration-documents.download`). Approve/Reject: both registration models use the `Reviewable` trait (`approve($remarks)` / `reject($remarks)` set status, `admin_remarks`, `reviewed_at`), and both resources use the `App\Filament\Concerns\HasReviewActions` trait, which saves the status and then sends `RegistrationApproved` / `RegistrationRejected` (they accept a Player or a StateAssociation) synchronously; a mail failure is reported and shown as a warning but never undoes the status change. The Players and State Associations resources are the pattern for new admin modules. Selects of state associations outside the registration resources list approved associations only (`Fields::approvedAssociationSelect()`, `StateAssociation::approved()` scope).
+- Admin helpers: `App\Filament\Support\Fields` (`richText()` without file attachments — images go through each module's own upload field; `stateOptions()`; `approvedAssociationSelect()`). Models with uploads use the `DeletesStoredFiles` trait (`storedFiles()` lists attribute => disk) so replaced and deleted files are removed; paths under `assets/` are never deleted. Deleting an event deletes its results through the models. Pages are edit-only (fixed slugs); Site Settings (`App\Filament\Pages\SiteSettings`) edits only the seeded keys, and `map_embed` stores a Google Maps embed URL, not HTML.
 - No Services, Repositories, DTOs or interfaces. Keep logic small, in model hooks/methods or the controller. Player ID and certificate numbers are generated in model `created` hooks.
 - Use enums/casts for statuses; never hard-code status strings in views.
 - Upcoming / current / previous events: `Event::upcoming()`, `current()`, `previous()` scopes on the dates (a null `end_date` means a single-day event). No status column, no cron job.
@@ -267,7 +268,7 @@ Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time
 
 **Update rules:** at the end of every phase, tick only items that work in the code, set "Current phase", add one line to the Log, and fix any section of this file the phase made outdated. Requests outside sections 4–6 go to "Change requests", never into the code.
 
-**Current phase:** 1B — Events, Results, News, Downloads, Banners, Pages, Settings (next)
+**Current phase:** 1C — Media, Community, Messages, Users, Dashboard (next)
 
 ### Done before the phases
 - [x] Database layer: migrations, models, enums, `config/jumpball.php`, seeders (section 14)
@@ -278,9 +279,9 @@ Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time
 
 ### Phase 1 — Admin panel
 - [x] 1A State Associations (approve/reject + emails, documents)
-- [ ] 1B Events + Results
-- [ ] 1B News, Downloads, Banners
-- [ ] 1B Pages (edit only), Site Settings
+- [x] 1B Events + Results
+- [x] 1B News, Downloads, Banners
+- [x] 1B Pages (edit only), Site Settings
 - [ ] 1C Galleries + photos, Videos
 - [ ] 1C International Players, Community categories + posts
 - [ ] 1C Contact Messages, admin users + profile, dashboard widgets, navigation groups
@@ -327,3 +328,4 @@ Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time
 ### Log
 - 2026-11-02 — Database layer, frontend design stage, Filament panel, Players and Office Bearers admin done. Next: Phase 1A.
 - 2026-11-02 — Phase 1A: State Associations admin (list/tabs/filters, form with logo + private documents, approve/reject + emails via shared traits, delete warning, approved-only association select for office bearers); DemoSeeder writes placeholder document PDFs. 70 tests green. Next: Phase 1B.
+- 2026-11-02 — Phase 1B: Events (period badge + scope filters, featured/published toggles) with Results relation manager, News, Downloads, Banners (reorderable), Pages (edit only), Site Settings page; `DeletesStoredFiles` trait; DemoSeeder now creates real sample images/PDFs. 81 tests green. Not browser-checked (needs admin login). Next: Phase 1C.
