@@ -1,7 +1,7 @@
 @extends('layouts.frontend')
 
 @php
-    $events ??= (require resource_path('views/frontend/_preview-data.php'))['previous'];
+    $events ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['previous'];
     $views = [
         0 => ['All Results', 'frontend.results.index', 'Championship Results', 'Official results and standings from national championships, entered by the federation office.'],
         1 => ['Winners', 'frontend.results.winners', 'Winners', 'First-place finishers in every category of every national championship.'],

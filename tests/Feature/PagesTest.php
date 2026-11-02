@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class PagesTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * Every public page from CLAUDE.md section 4 (except the admin area).
      *

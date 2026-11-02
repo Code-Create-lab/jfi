@@ -199,13 +199,6 @@ class DemoSeeder extends Seeder
         ]);
 
         OfficeBearer::query()->create([
-            'level' => BearerLevel::National,
-            'name' => 'Name to be confirmed',
-            'designation' => 'President',
-            'sort_order' => 1,
-        ]);
-
-        OfficeBearer::query()->create([
             'level' => BearerLevel::State,
             'state_association_id' => $association->id,
             'name' => 'Name to be confirmed',

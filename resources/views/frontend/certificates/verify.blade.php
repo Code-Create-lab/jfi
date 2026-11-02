@@ -3,7 +3,7 @@
 @php
     // Preview: any code shows the sample certificate except "invalid", which shows the not-found state.
     if (! isset($certificate) && $code !== 'invalid') {
-        $certificate = (require resource_path('views/frontend/_preview-data.php'))['certificate'];
+        $certificate = ((fn () => require resource_path('views/frontend/_preview-data.php'))())['certificate'];
     }
     $certificate ??= null;
 @endphp

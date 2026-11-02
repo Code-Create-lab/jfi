@@ -1,7 +1,7 @@
 @extends('layouts.frontend')
 
 @php
-    $events ??= (require resource_path('views/frontend/_preview-data.php'))[$period];
+    $events ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())[$period];
     $pageCopy = [
         'current' => ['Current Events', 'Championships and federation events taking place today.'],
         'upcoming' => ['Upcoming Events', 'Dates, venues and entry details for the national calendar.'],

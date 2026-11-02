@@ -1,7 +1,7 @@
 @extends('layouts.frontend')
 
 @php
-    $preview = isset($category, $categories) ? null : require resource_path('views/frontend/_preview-data.php');
+    $preview = isset($category, $categories) ? null : (fn () => require resource_path('views/frontend/_preview-data.php'))();
     $categories ??= $preview['categories'];
     $category ??= $categories->firstWhere('slug', $slug) ?? $categories->first();
     $documents = $category->posts->whereNotNull('document_path');

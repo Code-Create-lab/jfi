@@ -1,7 +1,7 @@
 @extends('layouts.frontend')
 
 @php
-    $preview = isset($event, $galleries, $videos) ? null : require resource_path('views/frontend/_preview-data.php');
+    $preview = isset($event, $galleries, $videos) ? null : (fn () => require resource_path('views/frontend/_preview-data.php'))();
     $event ??= $preview['upcoming']->merge($preview['previous'])->firstWhere('slug', $slug) ?? $preview['previous']->first();
     $galleries ??= $preview['galleries']->filter(fn ($gallery) => $gallery->event?->slug === $event->slug);
     $videos ??= $preview['videos']->filter(fn ($video) => $video->event?->slug === $event->slug);

@@ -217,7 +217,7 @@ Website text, event details, office bearer info, state association info, player 
 ## 14. Database Layer (implemented)
 
 - **Development:** not deployed yet, so `php artisan migrate:fresh --seed` is fine during development.
-- **Seeding:** `php artisan migrate:fresh --seed` creates the admin (`ADMIN_EMAIL` / `ADMIN_PASSWORD`; falls back to admin@example.com / password only in local), settings and static pages. Demo rows: `php artisan db:seed --class=DemoSeeder` (never in production).
+- **Seeding:** `php artisan migrate:fresh --seed` creates the admin (`ADMIN_EMAIL` / `ADMIN_PASSWORD`; falls back to admin@example.com / password only in local), settings, static pages and the national office bearers (`OfficeBearerSeeder`, from `config('jumpball.national_bearers')`, photos copied to the public disk; skips names that already exist). The same config list is the public fallback while no published national bearer exists (`OfficeBearer::nationalForDisplay()`). Demo rows: `php artisan db:seed --class=DemoSeeder` (never in production).
 - **Numbers:** Player ID `players.registration_no` = `JFI-2026-00001` (prefix from `config/jumpball.php`, year, zero-padded id), set in `Player::created`. Certificates: `certificate_no` = `JFI-C-2026-00001`; `verification_code` = random 32 characters, used in the QR verify URL (e.g. `/certificates/verify/{verification_code}`), never the Player ID or certificate number.
 
 ### Conventions

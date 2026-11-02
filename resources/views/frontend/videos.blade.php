@@ -1,7 +1,7 @@
 @extends('layouts.frontend')
 
 @php
-    $videos ??= (require resource_path('views/frontend/_preview-data.php'))['videos'];
+    $videos ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['videos'];
 @endphp
 
 @section('title', 'Video Gallery')

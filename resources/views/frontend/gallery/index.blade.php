@@ -1,7 +1,7 @@
 @extends('layouts.frontend')
 
 @php
-    $galleries ??= (require resource_path('views/frontend/_preview-data.php'))['galleries'];
+    $galleries ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['galleries'];
 @endphp
 
 @section('title', 'Photo Gallery')

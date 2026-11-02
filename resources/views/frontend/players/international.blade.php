@@ -1,7 +1,7 @@
 @extends('layouts.frontend')
 
 @php
-    $internationalPlayers ??= (require resource_path('views/frontend/_preview-data.php'))['internationalPlayers'];
+    $internationalPlayers ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['internationalPlayers'];
 @endphp
 
 @section('title', 'International Players')

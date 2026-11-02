@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\OfficeBearerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,12 +16,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::name('frontend.')->group(function () {
-    Route::view('/', 'frontend.home')->name('home');
+    Route::get('/', HomeController::class)->name('home');
 
     Route::view('/about-federation', 'frontend.page', ['slug' => 'about-federation'])->name('about.federation');
     Route::view('/about-jumpball', 'frontend.page', ['slug' => 'about-jumpball'])->name('about.jumpball');
     Route::view('/president-message', 'frontend.page', ['slug' => 'president-message'])->name('about.president');
-    Route::view('/office-bearers/national', 'frontend.office-bearers', ['level' => 'national'])->name('office-bearers.national');
+    Route::get('/office-bearers/national', [OfficeBearerController::class, 'national'])->name('office-bearers.national');
     Route::view('/office-bearers/state', 'frontend.office-bearers', ['level' => 'state'])->name('office-bearers.state');
 
     Route::view('/state-associations', 'frontend.associations.index')->name('associations.index');

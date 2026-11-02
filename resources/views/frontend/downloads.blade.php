@@ -3,7 +3,7 @@
 @php
     $isRuleBook = ($mode ?? 'downloads') === 'rule-book';
     $activeCategory = $isRuleBook ? App\Enums\DownloadCategory::RuleBook : App\Enums\DownloadCategory::tryFrom((string) request('category'));
-    $downloads ??= (require resource_path('views/frontend/_preview-data.php'))['downloads']
+    $downloads ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['downloads']
         ->when($activeCategory, fn ($items) => $items->where('category', $activeCategory));
     $title = $isRuleBook ? 'Rule Book' : 'Downloads & Official Notices';
     $currentRuleBook = $isRuleBook ? $downloads->first() : null;

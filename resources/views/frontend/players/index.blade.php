@@ -1,7 +1,7 @@
 @extends('layouts.frontend')
 
 @php
-    $preview = isset($players, $associations) ? null : require resource_path('views/frontend/_preview-data.php');
+    $preview = isset($players, $associations) ? null : (fn () => require resource_path('views/frontend/_preview-data.php'))();
     $players ??= $preview['players'];
     $associations ??= $preview['associations'];
 @endphp

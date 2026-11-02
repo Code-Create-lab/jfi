@@ -1,7 +1,7 @@
 @extends('layouts.frontend')
 
 @php
-    $associations ??= (require resource_path('views/frontend/_preview-data.php'))['associations'];
+    $associations ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['associations'];
 @endphp
 
 @section('title', 'Recognized State Associations')

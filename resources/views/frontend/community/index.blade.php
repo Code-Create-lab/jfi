@@ -1,7 +1,7 @@
 @extends('layouts.frontend')
 
 @php
-    $categories ??= (require resource_path('views/frontend/_preview-data.php'))['categories'];
+    $categories ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['categories'];
 @endphp
 
 @section('title', 'Community & Awareness')

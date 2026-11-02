@@ -1,8 +1,8 @@
 @extends('layouts.frontend')
 
 @php
-    $gallery ??= (require resource_path('views/frontend/_preview-data.php'))['galleries']->firstWhere('slug', $slug)
-        ?? (require resource_path('views/frontend/_preview-data.php'))['galleries']->first();
+    $gallery ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['galleries']->firstWhere('slug', $slug)
+        ?? ((fn () => require resource_path('views/frontend/_preview-data.php'))())['galleries']->first();
 @endphp
 
 @section('title', $gallery->title.' - Photos')

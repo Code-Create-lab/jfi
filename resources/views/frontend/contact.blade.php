@@ -1,7 +1,7 @@
 @extends('layouts.frontend')
 
 @php
-    $contact ??= (require resource_path('views/frontend/_preview-data.php'))['contact'];
+    $contact ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['contact'];
 @endphp
 
 @section('title', 'Contact the Federation')

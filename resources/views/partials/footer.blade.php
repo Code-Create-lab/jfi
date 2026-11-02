@@ -1,4 +1,4 @@
-@php($contact ??= (require resource_path('views/frontend/_preview-data.php'))['contact'])
+@php($contact ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['contact'])
 <footer>
 <div class="section pb-0 bg-accent-color">
 <div class="hero-container">

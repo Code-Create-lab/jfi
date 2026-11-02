@@ -4,7 +4,7 @@
 @section('meta_description', 'Official website of the Jumpball Federation of India: championships, results, player registration and Player ID, certificate verification and state associations.')
 
 @php
-    $preview = isset($banners, $stats, $upcomingEvents, $announcements, $latestNews, $galleries, $internationalPlayers, $nationalBearers) ? null : require resource_path('views/frontend/_preview-data.php');
+    $preview = isset($banners, $stats, $upcomingEvents, $announcements, $latestNews, $galleries, $internationalPlayers, $nationalBearers) ? null : (fn () => require resource_path('views/frontend/_preview-data.php'))();
     $banners ??= $preview['banners'];
     $stats ??= $preview['stats'];
     $upcomingEvents ??= $preview['upcoming'];

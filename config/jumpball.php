@@ -33,6 +33,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | National Office Bearers (static fallback and seed data)
+    |--------------------------------------------------------------------------
+    |
+    | Shown on the home page ("Who Runs the Federation") and the National
+    | Office Bearers page only while no published national office bearer
+    | exists in the database. OfficeBearerSeeder also uses this list to create
+    | the initial records, copying each photo to the public disk.
+    |
+    */
+
+    'national_bearers' => [
+        ['name' => 'Rupesh Utam', 'designation' => 'President', 'location' => 'Pune, Maharashtra', 'photo' => 'assets/images/jfi/bearers/rupesh-utam.webp'],
+        ['name' => 'Ram Pravesh Kumar', 'designation' => 'Secretary General', 'location' => null, 'photo' => 'assets/images/jfi/bearers/ram-pravesh-kumar.webp'],
+        ['name' => 'Rajesh Ranjan', 'designation' => 'Treasurer', 'location' => null, 'photo' => 'assets/images/jfi/bearers/rajesh-ranjan.webp'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Public Site Navigation
     |--------------------------------------------------------------------------
     |

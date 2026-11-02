@@ -2,7 +2,7 @@
 
 @php
     $activeType = App\Enums\NewsType::tryFrom((string) request('type'));
-    $news ??= (require resource_path('views/frontend/_preview-data.php'))['news']
+    $news ??= ((fn () => require resource_path('views/frontend/_preview-data.php'))())['news']
         ->when($activeType, fn ($items) => $items->where('type', $activeType));
 @endphp
 
