@@ -18,7 +18,8 @@ Source of truth: `10xCart_Jumpball_Federation_Quotation_27000.pdf` (fixed-scope 
 - **Framework:** Laravel 13 (PHP 8.3+). Models use Laravel 13 attributes (`#[Fillable]`, `#[Hidden]`, `#[Scope]`) and a `casts()` method.
 - **Views:** Blade, built on the purchased/selected HTML template (`TODO: template name`)
 - **Database:** MySQL/MariaDB on shared hosting via Eloquent + migrations (local development uses SQLite). No DB enum or JSON columns.
-- **Auth:** Laravel session auth. Admins = the default `users` table on the default `web` guard (every user is an admin). Players = a separate authenticatable `players` table with a `player` guard (configured in a later step). No Breeze/Jetstream, roles or permissions.
+- **Admin panel:** Filament 5 panel at `/admin` (`App\Providers\Filament\AdminPanelProvider`, code in `app/Filament/`). Light mode only, JFI logo and blue primary colour. Widgets do not poll (shared hosting).
+- **Auth:** Laravel session auth. Admins = the default `users` table on the default `web` guard, logging in through Filament's login page (every user is an admin: `User::canAccessPanel()` returns true). Players = a separate authenticatable `players` table with a `player` guard (configured in a later step). No Breeze/Jetstream, roles or permissions.
 - **PDF certificates:** `barryvdh/laravel-dompdf` (one Blade certificate template)
 - **QR codes:** `simplesoftwareio/simple-qrcode` (embed QR in the certificate PDF)
 - **CSV export:** native `fputcsv` / streamed response (no heavy Excel package unless needed)
@@ -35,10 +36,10 @@ Source of truth: `10xCart_Jumpball_Federation_Quotation_27000.pdf` (fixed-scope 
 │   ├── Http/
 │   │   ├── Controllers/
 │   │   │   ├── Frontend/        # public pages (Home, About, Events, Results, Gallery, ...)
-│   │   │   ├── Admin/           # admin CRUD controllers (resourceful)
 │   │   │   └── Player/          # player login area (profile, certificates)
 │   │   ├── Middleware/          # e.g. EnsurePlayerApproved
-│   │   └── Requests/            # FormRequest validation classes (Admin/, Frontend/)
+│   │   └── Requests/            # FormRequest validation classes (Frontend/)
+│   ├── Filament/                # admin panel: Resources/ (one per module), Widgets/ (dashboard)
 │   ├── Models/                  # Eloquent models (see section 7)
 │   │   └── Concerns/            # Publishable (published() scope), HasSlug
 │   ├── Mail/                    # RegistrationReceived, RegistrationApproved, RegistrationRejected
@@ -50,15 +51,13 @@ Source of truth: `10xCart_Jumpball_Federation_Quotation_27000.pdf` (fixed-scope 
 │   ├── migrations/
 │   └── seeders/                 # Admin/Setting/Page seeders; DemoSeeder (1–2 sample rows, run manually)
 ├── resources/views/
-│   ├── layouts/                 # frontend.blade.php, admin.blade.php, player.blade.php
+│   ├── layouts/                 # frontend.blade.php, player.blade.php
 │   ├── frontend/                # 29 public pages
-│   ├── admin/                   # dashboard + module CRUD views
 │   ├── player/
 │   ├── certificates/            # the ONE agreed certificate template (dompdf)
 │   └── emails/
 ├── routes/
-│   ├── web.php                  # public + player routes
-│   └── admin.php                # prefix('admin'), middleware('auth')
+│   └── web.php                  # public + player routes (admin routes come from the Filament panel)
 ├── public/assets/               # template CSS/JS/fonts/images
 └── storage/app/
     ├── public/                  # gallery, banners, office bearer photos, downloads (public)
@@ -186,8 +185,8 @@ Website text, event details, office bearer info, state association info, player 
 
 ## 12. Laravel Conventions
 
-- Use resource controllers + route model binding; name routes (`admin.events.index`, `frontend.events.upcoming`).
-- All validation in **FormRequest** classes, never inline in controllers.
+- Frontend/player: resource controllers + route model binding; name routes (`frontend.events.upcoming`). All validation in **FormRequest** classes, never inline in controllers.
+- Admin: one Filament resource per module in `app/Filament/Resources`; validation lives in the resource form schema (`->required()`, `->rules()`). Use the enums (they implement Filament `HasLabel`/`HasColor`) for selects and badges. Status/ID/review fields are set explicitly in actions (e.g. Approve/Reject), never through mass-assigned form data. Admin CSV export is a streamed `fputcsv` download action, not Filament's queued exporter. Admin file uploads for registration documents use the private `local` disk.
 - No Services, Repositories, DTOs or interfaces. Keep logic small, in model hooks/methods or the controller. Player ID and certificate numbers are generated in model `created` hooks.
 - Use enums/casts for statuses; never hard-code status strings in views.
 - Upcoming / current / previous events: `Event::upcoming()`, `current()`, `previous()` scopes on the dates (a null `end_date` means a single-day event). No status column, no cron job.
@@ -204,7 +203,8 @@ Website text, event details, office bearer info, state association info, player 
 ## 13. Working Notes for Claude Code
 
 - Keep it simple and maintainable — the client manages content after handover via the admin panel.
-- Don't add packages beyond those in section 2 without a clear reason; prefer plain Laravel.
+- Don't add packages beyond those in section 2 without a clear reason; prefer plain Laravel (Filament plugins count as packages).
+- Filament assets are published to `public/{css,js,fonts}/filament` by `php artisan filament:upgrade` (runs on `composer install`) and are git-ignored. When deploying without Composer on the server, run `php artisan filament:assets` before uploading.
 - Prefer the template's existing components over custom UI.
 - Every public listing (events, news, community, etc.) must be driven from the admin panel, not hard-coded.
 - Player ID, certificate number and verification code formats: see section 14.
