@@ -1159,6 +1159,60 @@ input[type="file"].form-control-jfi::file-selector-button{
     font-size: 15px;
 }
 
+.form-control-jfi.is-invalid{
+    border-color: var(--jfi-danger);
+}
+
+.form-control-jfi.is-invalid:focus{
+    box-shadow: 0 0 0 3px rgba(166, 27, 27, .15);
+}
+
+.form-error{
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--jfi-danger);
+}
+
+.form-alert{
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 22px;
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.form-alert > i{
+    margin-top: 2px;
+    font-size: 20px;
+}
+
+.form-alert p{
+    margin: 4px 0 0;
+    color: inherit;
+}
+
+.form-alert-success{
+    background-color: var(--jfi-success-bg);
+    color: var(--jfi-success);
+}
+
+.form-alert-error{
+    background-color: var(--jfi-danger-bg);
+    color: var(--jfi-danger);
+}
+
+.form-honeypot{
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
 .auth-card{
     padding: 36px;
     border: 1px solid var(--jfi-line);

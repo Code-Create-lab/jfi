@@ -3,8 +3,11 @@
 namespace App\Providers;
 
 use App\Models\Setting;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,6 +30,9 @@ class AppServiceProvider extends ServiceProvider
         Model::preventLazyLoading(! $this->app->isProduction());
 
         Paginator::defaultView('partials.pagination');
+
+        // Contact and registration forms: 5 submissions per minute per IP.
+        RateLimiter::for('public-forms', fn (Request $request): Limit => Limit::perMinute(5)->by($request->ip()));
 
         // Site settings for the public layout, footer and contact page
         // (managed in /admin/site-settings; read from one cache entry).

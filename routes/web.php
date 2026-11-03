@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Frontend\CommunityController;
+use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\DownloadController;
 use App\Http\Controllers\Frontend\EventController;
 use App\Http\Controllers\Frontend\HomeController;
@@ -18,9 +19,10 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 |
 | One route per public page in CLAUDE.md section 4. Content pages read from
-| the database (Phase 2A). The registration forms, player login and
-| certificate pages are still view routes with preview data; they are wired
-| in Phases 2B, 3 and 4. Contact details come from settings (view composer).
+| the database (Phase 2A). The contact and registration forms post to
+| controllers with FormRequests (Phase 2B), throttled by the "public-forms"
+| limiter. Player login and the certificate pages are still view routes;
+| they are wired in Phases 3 and 4. Contact details come from settings.
 |
 */
 
@@ -34,10 +36,12 @@ Route::name('frontend.')->group(function () {
     Route::get('/office-bearers/state', [OfficeBearerController::class, 'state'])->name('office-bearers.state');
 
     Route::get('/state-associations', [StateAssociationController::class, 'index'])->name('associations.index');
-    Route::view('/state-associations/register', 'frontend.associations.register')->name('associations.register');
+    Route::get('/state-associations/register', [StateAssociationController::class, 'create'])->name('associations.register');
+    Route::post('/state-associations/register', [StateAssociationController::class, 'store'])->middleware('throttle:public-forms')->name('associations.store');
 
     Route::get('/players', [PlayerController::class, 'index'])->name('players.index');
-    Route::view('/players/register', 'frontend.players.register')->name('players.register');
+    Route::get('/players/register', [PlayerController::class, 'create'])->name('players.register');
+    Route::post('/players/register', [PlayerController::class, 'store'])->middleware('throttle:public-forms')->name('players.store');
     Route::view('/players/login', 'frontend.players.login')->name('players.login');
     Route::get('/international-players', [PlayerController::class, 'international'])->name('players.international');
 
@@ -66,6 +70,7 @@ Route::name('frontend.')->group(function () {
     Route::get('/community/{slug}', [CommunityController::class, 'show'])->name('community.show');
 
     Route::view('/contact', 'frontend.contact')->name('contact');
+    Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:public-forms')->name('contact.store');
     Route::get('/privacy-policy', PageController::class)->defaults('slug', 'privacy-policy')->name('legal.privacy');
     Route::get('/terms-and-conditions', PageController::class)->defaults('slug', 'terms-and-conditions')->name('legal.terms');
 });

@@ -227,7 +227,8 @@ Tick when received. We enter only 1–2 sample items per section; the client ent
 - Every public listing (events, news, community, etc.) must be driven from the admin panel, not hard-coded.
 - Player ID, certificate number and verification code formats: see section 14.
 - **Frontend:** every public page in section 4 (except the admin area) is a Blade view in `resources/views/frontend/` with layout `layouts/frontend.blade.php`; navigation lives in `config('jumpball.navigation')`. Content pages are served by controllers in `app/Http/Controllers/Frontend` (Phase 2A): every query uses `published()` (players: approved only; associations: `approved()`), relations are eager-loaded (`Model::preventLazyLoading()` is on outside production), long lists paginate with `partials/pagination.blade.php`, and unknown or unpublished slugs return 404. The five content pages use `PageController` with the slug passed as a route default. Contact details, social links, footer text and the default meta description come from settings through the view composer in `AppServiceProvider` (`$site`, `$contact`, `$social`). The home slideshow uses `config('jumpball.fallback_banners')` until a banner is published.
-- **Preview data:** only the not-yet-wired views still fall back to `resources/views/frontend/_preview-data.php` (Player Registration until 2B, Certificate verify until 3); those routes are still `Route::view()`. Delete the file and the fallback lines once no view uses it (Phase 4 at the latest). Forms post to `#` until their wiring phase.
+- **Preview data:** only Certificate verify still falls back to `resources/views/frontend/_preview-data.php` (until Phase 3); its route is still `Route::view()`. Delete the file and the fallback lines once no view uses it (Phase 4 at the latest). The player login form posts to `#` until Phase 4.
+- **Public forms (Phase 2B):** Contact (`ContactController`), State Association Registration (`StateAssociationController@create/store`) and Player Registration (`PlayerController@create/store`) post to the same URLs as their pages, validated by FormRequests in `app/Http/Requests/Frontend`. Each form has `@csrf`, the `<x-honeypot/>` field (`website`, rule `prohibited`), the `throttle:public-forms` limiter (5 per minute per IP, `AppServiceProvider`), `<x-form-alert/>` and `<x-form-error/>` for messages, and old input. Uploads: pdf/jpg/png, max 2 MB, stored under generated names with `RegistrationDocument::storeUploads()` (documents on the private disk; player photos private, association logos public); stored files are deleted again if the insert fails. Registrations save as pending in a transaction, then `RegistrationReceived` is sent synchronously (a mail failure is reported, never shown). Success states are flashed to the same page (`registered_player` shows the Player ID, `registered_association`). Players must choose an approved association; while none exists the page shows a message instead of the form.
 - **Styles:** brand overrides in `public/assets/css/jfi-theme.css`, page components in `public/assets/css/jfi-components.css`. Do not edit the template's `main.css`.
 - **Images:** generated brand graphics in `public/assets/images/jfi/` (cover-1..6 are the fallback covers when no image is uploaded; certificate sample is watermarked SAMPLE). A few photos and icons from the original template in `public/assets/images/` are placeholders on the home page, in preview data and in inner page banners (`config('jumpball.page_banners')`, route pattern => photo); replace them with client photos (section 11). Unused template images were removed; a local copy is in `storage/app/backups/` (git-ignored).
 - **Animations:** template scroll-in effect: add `animate-box animate__animated` plus `data-animate="animate__fadeInUp"` (handled by `script.js`). Shared components already do this; cards in a `.row` are staggered by CSS.
@@ -268,7 +269,7 @@ Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time
 
 **Update rules:** at the end of every phase, tick only items that work in the code, set "Current phase", add one line to the Log, and fix any section of this file the phase made outdated. Requests outside sections 4–6 go to "Change requests", never into the code.
 
-**Current phase:** 2B — Frontend: contact and registration forms (next)
+**Current phase:** 2B done — next: client demo (40% milestone), then Phase 3 — Certificates
 
 ### Done before the phases
 - [x] Database layer: migrations, models, enums, `config/jumpball.php`, seeders (section 14)
@@ -290,9 +291,9 @@ Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time
 - [x] 2A Home, static pages, office bearers, state associations
 - [x] 2A Events, results, news, gallery, videos, downloads, rule book
 - [x] 2A International players, community, public player list
-- [ ] 2B Contact form
-- [ ] 2B State association registration + confirmation email
-- [ ] 2B Player registration + Player ID + confirmation email
+- [x] 2B Contact form
+- [x] 2B State association registration + confirmation email
+- [x] 2B Player registration + Player ID + confirmation email
 
 > Milestone: demo core pages + backend to the client → 2nd payment (40%).
 
@@ -331,3 +332,4 @@ Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time
 - 2026-11-02 — Phase 1B: Events (period badge + scope filters, featured/published toggles) with Results relation manager, News, Downloads, Banners (reorderable), Pages (edit only), Site Settings page; `DeletesStoredFiles` trait; DemoSeeder now creates real sample images/PDFs. 81 tests green. Not browser-checked (needs admin login). Next: Phase 1C.
 - 2026-11-02 — Phase 1C: Galleries (+ batch photo upload, inline captions, reorder), Videos (YouTube/Vimeo/Facebook, `embed_url`, thumbnails), International Players (grouped by country), Community categories + posts (PDF), Contact Messages (read-only, unread badge), Admin Users + profile page, 5-stat dashboard with links, navigation groups. Phase 1 (admin panel) complete. 90 tests green. Not browser-checked (needs admin login). Next: Phase 2A.
 - 2026-11-02 — Phase 2A: public pages on real data via Frontend controllers (published/approved only, eager loading, pagination, 404 for unpublished slugs); settings view composer for contact, social links, footer and default meta; preventLazyLoading on outside production; home slideshow fallback photos. All 32 content URLs return 200 with demo data and on an empty database. 95 tests green. Next: Phase 2B.
+- 2026-11-03 — Phase 2A audit: OK (published/approved scopes, eager loading, pagination, 404s, SEO, view composer). Phase 2B: Contact, State Association and Player registration forms wired (FormRequests, honeypot, 5/min throttle, inline errors + old input, private uploads with generated names, transaction + file cleanup, `RegistrationReceived` mail with Player ID, success panels, no-association message); preview fallback removed from Player Registration. 106 tests green. Browser check not done (Chrome extension not connected); pages return 200. Next: client demo, then Phase 3.

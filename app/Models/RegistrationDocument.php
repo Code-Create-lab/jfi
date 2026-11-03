@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * An uploaded registration document for a Player or StateAssociation.
@@ -26,6 +28,26 @@ class RegistrationDocument extends Model
         static::deleted(function (RegistrationDocument $document): void {
             Storage::disk('local')->delete($document->file_path);
         });
+    }
+
+    /**
+     * Store uploaded files on the private disk under generated names and
+     * return the attributes for documents()->createMany(). The original
+     * file name is kept for display only.
+     *
+     * @param  array<string, UploadedFile>  $files  document type => file
+     * @return list<array{document_type: string, file_path: string, original_name: string}>
+     */
+    public static function storeUploads(array $files, string $directory): array
+    {
+        return collect($files)
+            ->map(fn (UploadedFile $file, string $type): array => [
+                'document_type' => $type,
+                'file_path' => $file->store($directory, 'local'),
+                'original_name' => Str::limit($file->getClientOriginalName(), 250, ''),
+            ])
+            ->values()
+            ->all();
     }
 
     /**

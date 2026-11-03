@@ -9,40 +9,45 @@
 <section class="page-section">
 <div class="hero-container">
 <div class="detail-layout">
-<form action="#" class="jfi-form" method="post">
+<div class="d-flex flex-column gap-4">
+<x-form-alert :success="session('status')"/>
+<form action="{{ route('frontend.contact.store') }}" class="jfi-form" method="post">
 @csrf
+<x-honeypot/>
 <fieldset class="form-section">
 <legend>Send a Message</legend>
 <p class="form-section-note">Fields marked <span aria-hidden="true" class="required">*</span><span class="visually-hidden">with an asterisk</span> are required.</p>
 <div class="form-grid">
 <div class="form-field">
 <label class="form-label" for="contact-name">Your name <span class="required" aria-hidden="true">*</span></label>
-<input autocomplete="name" class="form-control-jfi" id="contact-name" name="name" required type="text"/>
+<input @error('name') aria-describedby="contact-name-error" aria-invalid="true" @enderror autocomplete="name" @class(['form-control-jfi', 'is-invalid' => $errors->has('name')]) id="contact-name" maxlength="255" name="name" required type="text" value="{{ old('name') }}"/>
+<x-form-error field="name" id="contact-name"/>
 </div>
 <div class="form-field">
 <label class="form-label" for="contact-email">Email <span class="required" aria-hidden="true">*</span></label>
-<input autocomplete="email" class="form-control-jfi" id="contact-email" name="email" required type="email"/>
+<input @error('email') aria-describedby="contact-email-error" aria-invalid="true" @enderror autocomplete="email" @class(['form-control-jfi', 'is-invalid' => $errors->has('email')]) id="contact-email" maxlength="255" name="email" required type="email" value="{{ old('email') }}"/>
+<x-form-error field="email" id="contact-email"/>
 </div>
 <div class="form-field">
 <label class="form-label" for="contact-phone">Phone</label>
-<input autocomplete="tel" class="form-control-jfi" id="contact-phone" inputmode="tel" name="phone" type="tel"/>
+<input @error('phone') aria-describedby="contact-phone-error" aria-invalid="true" @enderror autocomplete="tel" @class(['form-control-jfi', 'is-invalid' => $errors->has('phone')]) id="contact-phone" inputmode="tel" maxlength="20" name="phone" type="tel" value="{{ old('phone') }}"/>
+<x-form-error field="phone" id="contact-phone"/>
 </div>
 <div class="form-field">
 <label class="form-label" for="contact-subject">Subject</label>
-<select class="form-control-jfi" id="contact-subject" name="subject">
+<select @error('subject') aria-describedby="contact-subject-error" aria-invalid="true" @enderror @class(['form-control-jfi', 'is-invalid' => $errors->has('subject')]) id="contact-subject" name="subject">
 <option value="">Choose a topic</option>
-<option>Player registration</option>
-<option>State association recognition</option>
-<option>Championships and events</option>
-<option>Certificates</option>
-<option>Media enquiry</option>
-<option>Other</option>
+@foreach (App\Http\Requests\Frontend\StoreContactMessageRequest::SUBJECTS as $subject)
+<option @selected(old('subject') === $subject) value="{{ $subject }}">{{ $subject }}</option>
+@endforeach
 </select>
+<x-form-error field="subject" id="contact-subject"/>
 </div>
 <div class="form-field span-2">
 <label class="form-label" for="contact-message">Message <span class="required" aria-hidden="true">*</span></label>
-<textarea class="form-control-jfi" id="contact-message" name="message" required rows="6"></textarea>
-<p class="form-help">Include your Player ID if your question is about a registration or certificate.</p>
+<textarea aria-describedby="contact-message-help @error('message') contact-message-error @enderror" @error('message') aria-invalid="true" @enderror @class(['form-control-jfi', 'is-invalid' => $errors->has('message')]) id="contact-message" maxlength="5000" name="message" required rows="6">{{ old('message') }}</textarea>
+<x-form-error field="message" id="contact-message"/>
+<p class="form-help" id="contact-message-help">Include your Player ID if your question is about a registration or certificate.</p>
 </div>
 </div>
 </fieldset>
@@ -50,6 +55,7 @@
 <button class="jfi-btn jfi-btn-gold" type="submit">Send Message <i aria-hidden="true" class="fa-solid fa-paper-plane"></i></button>
 </div>
 </form>
+</div>
 
 <aside aria-label="Contact details">
 <div class="side-card">
