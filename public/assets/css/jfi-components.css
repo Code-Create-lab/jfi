@@ -1490,6 +1490,19 @@ input[type="file"].form-control-jfi::file-selector-button{
 
 /* 14. Downloads */
 
+/* Certificate lookup results reuse the download list */
+.lookup-results{
+    padding: 28px;
+    border: 1px solid var(--jfi-line);
+    border-top: 3px solid var(--jfi-gold);
+    border-radius: var(--radius-md);
+    background-color: var(--jfi-surface);
+}
+
+.lookup-results-head{
+    margin-bottom: 20px;
+}
+
 .download-list{
     margin: 0;
     padding: 0;

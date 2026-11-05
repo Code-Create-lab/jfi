@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CertificatePdfController;
+use App\Http\Controllers\Frontend\CertificateController;
 use App\Http\Controllers\Frontend\CommunityController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\DownloadController;
@@ -21,8 +23,10 @@ use Illuminate\Support\Facades\Route;
 | One route per public page in CLAUDE.md section 4. Content pages read from
 | the database (Phase 2A). The contact and registration forms post to
 | controllers with FormRequests (Phase 2B), throttled by the "public-forms"
-| limiter. Player login and the certificate pages are still view routes;
-| they are wired in Phases 3 and 4. Contact details come from settings.
+| limiter. Certificates (Phase 3): lookup by Player ID + date of birth,
+| throttled by "certificate-lookup", gives 30-minute signed PDF links; the QR
+| code on each PDF opens the verify page. Player login is still a view route
+| until Phase 4. Contact details come from settings.
 |
 */
 
@@ -55,8 +59,10 @@ Route::name('frontend.')->group(function () {
     Route::get('/results/runners-up', [EventController::class, 'results'])->defaults('position', 2)->name('results.runners-up');
     Route::get('/results/third-place', [EventController::class, 'results'])->defaults('position', 3)->name('results.third-place');
 
-    Route::view('/certificates', 'frontend.certificates.index')->name('certificates.index');
-    Route::view('/certificates/verify/{code}', 'frontend.certificates.verify')->name('certificates.verify');
+    Route::get('/certificates', [CertificateController::class, 'index'])->name('certificates.index');
+    Route::post('/certificates', [CertificateController::class, 'lookup'])->middleware('throttle:certificate-lookup')->name('certificates.lookup');
+    Route::get('/certificates/verify/{code}', [CertificateController::class, 'verify'])->name('certificates.verify');
+    Route::get('/certificates/{certificate}/download', CertificatePdfController::class)->middleware('signed')->name('certificates.download');
 
     Route::get('/news', [NewsController::class, 'index'])->name('news.index');
     Route::get('/news/{slug}', [NewsController::class, 'show'])->name('news.show');

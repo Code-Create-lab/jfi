@@ -2,18 +2,35 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DeletesStoredFiles;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 /**
  * verification_code is random and used in the QR verification URL, so
  * certificates cannot be found by guessing certificate numbers.
+ *
+ * The PDF is rendered from resources/views/certificates/certificate.blade.php
+ * into the private disk when the certificate is created, again when its
+ * printed details change, and on the admin's Regenerate action.
  */
-#[Fillable(['player_id', 'event_id', 'title', 'achievement', 'issued_on', 'pdf_path'])]
+#[Fillable(['player_id', 'event_id', 'title', 'achievement', 'issued_on'])]
 class Certificate extends Model
 {
+    use DeletesStoredFiles;
+
+    /**
+     * Columns printed on the certificate; changing one renders a new PDF.
+     *
+     * @var list<string>
+     */
+    private const array PRINTED_ATTRIBUTES = ['player_id', 'event_id', 'title', 'achievement', 'issued_on'];
+
     protected static function booted(): void
     {
         static::creating(function (Certificate $certificate): void {
@@ -29,6 +46,13 @@ class Certificate extends Model
             );
 
             $certificate->saveQuietly();
+            $certificate->generatePdf();
+        });
+
+        static::updated(function (Certificate $certificate): void {
+            if ($certificate->wasChanged(self::PRINTED_ATTRIBUTES)) {
+                $certificate->generatePdf();
+            }
         });
     }
 
@@ -46,6 +70,46 @@ class Certificate extends Model
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
+    }
+
+    /**
+     * Renders the certificate and saves it as certificates/{certificate_no}.pdf
+     * on the private disk, replacing any earlier copy.
+     */
+    public function generatePdf(): void
+    {
+        $this->load(['player', 'event']);
+
+        $path = 'certificates/'.$this->certificate_no.'.pdf';
+
+        $pdf = Pdf::loadView('certificates.certificate', [
+            'certificate' => $this,
+            'logo' => 'data:image/png;base64,'.base64_encode((string) file_get_contents(public_path('assets/images/jfi/certificate-logo.png'))),
+            'qrCode' => 'data:image/svg+xml;base64,'.base64_encode((string) QrCode::format('svg')->size(300)->margin(0)->errorCorrection('M')->generate($this->verificationUrl())),
+        ])
+            ->setPaper('a4', 'landscape')
+            // Embed only the glyphs used, not the whole font (about 1 MB otherwise).
+            ->setOption('isFontSubsettingEnabled', true);
+
+        Storage::disk('local')->put($path, $pdf->output());
+
+        $this->forceFill(['pdf_path' => $path])->saveQuietly();
+    }
+
+    /**
+     * The public verification page the QR code points to.
+     */
+    public function verificationUrl(): string
+    {
+        return route('frontend.certificates.verify', $this->verification_code);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function storedFiles(): array
+    {
+        return ['pdf_path' => 'local'];
     }
 
     /**

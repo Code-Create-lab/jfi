@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\Gender;
+use App\Models\Certificate;
 use App\Models\CommunityCategory;
 use App\Models\Event;
 use App\Models\Gallery;
@@ -22,6 +23,11 @@ use Tests\TestCase;
 class PagesTest extends TestCase
 {
     use RefreshDatabase;
+
+    /**
+     * Placeholder in pageProvider for the demo certificate's verification code.
+     */
+    private const string DEMO_CERTIFICATE = 'demo-certificate';
 
     protected function setUp(): void
     {
@@ -63,7 +69,7 @@ class PagesTest extends TestCase
             'runners-up' => ['frontend.results.runners-up', [], 'Runners-up'],
             'third place' => ['frontend.results.third-place', [], 'Third Place'],
             'certificates' => ['frontend.certificates.index', [], 'Certificates &amp; Verification'],
-            'certificate verification' => ['frontend.certificates.verify', ['code' => 'SAMPLE'], 'Certificate Verification'],
+            'certificate verification' => ['frontend.certificates.verify', ['code' => self::DEMO_CERTIFICATE], 'Certificate Verification'],
             'news' => ['frontend.news.index', [], 'News &amp; Press Releases'],
             'news article' => ['frontend.news.show', ['slug' => 'junior-national-championship-concludes'], 'Junior National Championship Concludes'],
             'photo gallery' => ['frontend.gallery.index', [], 'Photo Gallery'],
@@ -85,6 +91,12 @@ class PagesTest extends TestCase
     public function test_page_renders_with_demo_data(string $routeName, array $parameters, string $title): void
     {
         $this->seed(DemoSeeder::class);
+
+        // The demo certificate's verification code is random, so it is looked up after seeding.
+        $parameters = array_map(
+            fn (string $value): string => $value === self::DEMO_CERTIFICATE ? Certificate::query()->value('verification_code') : $value,
+            $parameters,
+        );
 
         $this->get(route($routeName, $parameters))
             ->assertOk()
@@ -190,8 +202,8 @@ class PagesTest extends TestCase
     public function test_unknown_certificate_code_shows_not_found_state(): void
     {
         $this->get(route('frontend.certificates.verify', ['code' => 'invalid']))
-            ->assertOk()
-            ->assertSee('Certificate not found');
+            ->assertNotFound()
+            ->assertSee('Not a valid certificate');
     }
 
     public function test_unknown_page_shows_custom_404(): void

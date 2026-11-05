@@ -1,15 +1,12 @@
 @extends('layouts.frontend')
 
-@php
-    // Preview: any code shows the sample certificate except "invalid", which shows the not-found state.
-    if (! isset($certificate) && $code !== 'invalid') {
-        $certificate = ((fn () => require resource_path('views/frontend/_preview-data.php'))())['certificate'];
-    }
-    $certificate ??= null;
-@endphp
-
 @section('title', 'Certificate Verification')
 @section('meta_description', 'Verify a certificate issued by the Jumpball Federation of India.')
+
+@push('styles')
+{{-- Verification pages show a player's name; keep them out of search results. --}}
+<meta content="noindex" name="robots"/>
+@endpush
 
 @section('content')
 <x-page-banner :crumbs="['Certificates' => route('frontend.certificates.index')]" subtitle="Details held by the Jumpball Federation of India for this certificate." title="Certificate Verification"/>
@@ -23,7 +20,7 @@
 <div aria-live="polite" class="verify-status verify-status-valid">
 <i aria-hidden="true" class="fa-solid fa-circle-check"></i>
 <div>
-<h2>Verified certificate</h2>
+<h2>Valid certificate</h2>
 <p>This certificate was issued by the Jumpball Federation of India and matches our records.</p>
 </div>
 </div>
@@ -46,8 +43,8 @@
 <div aria-live="polite" class="verify-status verify-status-invalid">
 <i aria-hidden="true" class="fa-solid fa-circle-xmark"></i>
 <div>
-<h2>Certificate not found</h2>
-<p>We could not find a certificate for this verification link.</p>
+<h2>Not a valid certificate</h2>
+<p>We could not find a certificate issued by the federation for this verification link.</p>
 </div>
 </div>
 <div class="p-4">

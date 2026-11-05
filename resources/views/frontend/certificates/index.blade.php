@@ -8,20 +8,64 @@
 
 <section class="page-section">
 <div class="hero-container">
+@if ($lookupPlayer)
+<section aria-labelledby="lookup-results-title" class="lookup-results mb-5">
+<div class="lookup-results-head">
+<h2 class="title-plain fs-3 mb-1" id="lookup-results-title">Certificates for {{ $lookupPlayer->name }}</h2>
+<p class="mb-0">Player ID <span class="player-id">{{ $lookupPlayer->registration_no }}</span></p>
+</div>
+@if ($lookupPlayer->certificates->isNotEmpty())
+<ul class="download-list">
+@foreach ($lookupPlayer->certificates as $certificate)
+<li class="download-item">
+<span aria-hidden="true" class="file-icon">PDF</span>
+<div>
+<h3 class="download-title">{{ $certificate->title }}</h3>
+@if ($certificate->achievement || $certificate->event)
+<p>{{ collect([$certificate->achievement, $certificate->event?->title])->filter()->join(', ') }}</p>
+@endif
+<div class="meta-inline">
+<span>Certificate No. <span class="player-id">{{ $certificate->certificate_no }}</span></span>
+<span>Issued <time datetime="{{ $certificate->issued_on->toDateString() }}">{{ $certificate->issued_on->format('j M Y') }}</time></span>
+</div>
+</div>
+<a class="jfi-btn jfi-btn-primary" href="{{ $downloadLinks[$certificate->id] }}"><i aria-hidden="true" class="fa-solid fa-download"></i> Download PDF<span class="visually-hidden"> {{ $certificate->title }}</span></a>
+</li>
+@endforeach
+</ul>
+<p class="form-help mt-3 mb-0">For your security these download links work for 30 minutes. Search again to get new links.</p>
+@else
+<x-empty-state icon="fa-regular fa-file-lines" title="No certificates yet">
+No certificates have been issued to this Player ID yet. They appear here once the federation issues them.
+</x-empty-state>
+@endif
+</section>
+@endif
 <div class="row gx-4 gy-5">
 <div class="col-lg-6">
 <div class="auth-card h-100">
 <h2 class="title-plain fs-3 mb-2">Find My Certificate</h2>
 <p class="mb-4">Enter your Player ID and date of birth. Both must match our records.</p>
-<form action="{{ route('frontend.certificates.index') }}" class="jfi-form gap-4" method="get">
+@if (session('lookup_failed'))
+<div class="form-alert form-alert-error" role="alert">
+<i aria-hidden="true" class="fa-solid fa-circle-exclamation"></i>
+<div><strong>We could not find certificates for this Player ID and date of birth.</strong><p>Check both and try again. Only approved registrations have certificates.</p></div>
+</div>
+@endif
+<x-form-alert/>
+<form action="{{ route('frontend.certificates.lookup') }}" class="jfi-form gap-4" method="post" novalidate>
+@csrf
+<x-honeypot/>
 <div class="form-field">
 <label class="form-label" for="lookup-player-id">Player ID</label>
-<input aria-describedby="lookup-player-id-help" autocapitalize="characters" class="form-control-jfi" id="lookup-player-id" name="player_id" pattern="[A-Za-z]+-[0-9]{4}-[0-9]+" placeholder="JFI-2026-00001" required type="text" value="{{ request('player_id') }}"/>
+<input aria-describedby="lookup-player-id-help @error('player_id') lookup-player-id-error @enderror" @error('player_id') aria-invalid="true" @enderror autocapitalize="characters" @class(['form-control-jfi', 'is-invalid' => $errors->has('player_id')]) id="lookup-player-id" name="player_id" pattern="[A-Za-z]+-[0-9]{4}-[0-9]+" placeholder="JFI-2026-00001" required type="text" value="{{ old('player_id') }}"/>
 <p class="form-help" id="lookup-player-id-help">Printed on your registration confirmation, for example JFI-2026-00001.</p>
+<x-form-error field="player_id" id="lookup-player-id"/>
 </div>
 <div class="form-field">
 <label class="form-label" for="lookup-dob">Date of birth</label>
-<input autocomplete="bday" class="form-control-jfi" id="lookup-dob" max="{{ today()->toDateString() }}" name="date_of_birth" required type="date" value="{{ request('date_of_birth') }}"/>
+<input @error('date_of_birth') aria-describedby="lookup-dob-error" aria-invalid="true" @enderror autocomplete="bday" @class(['form-control-jfi', 'is-invalid' => $errors->has('date_of_birth')]) id="lookup-dob" max="{{ today()->toDateString() }}" name="date_of_birth" required type="date"/>
+<x-form-error field="date_of_birth" id="lookup-dob"/>
 </div>
 <button class="jfi-btn jfi-btn-primary jfi-btn-block" type="submit"><i aria-hidden="true" class="fa-solid fa-magnifying-glass"></i> Find Certificates</button>
 </form>

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Players\Pages;
 
+use App\Filament\Resources\Certificates\CertificateResource;
 use App\Filament\Resources\Players\PlayerResource;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
@@ -20,6 +21,7 @@ class ViewPlayer extends ViewRecord
         return [
             PlayerResource::approveAction(),
             PlayerResource::rejectAction(),
+            CertificateResource::issueAction(),
             EditAction::make(),
         ];
     }

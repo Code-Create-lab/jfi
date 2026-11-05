@@ -41,6 +41,9 @@ class AppServiceProvider extends ServiceProvider
         // Contact and registration forms: 5 submissions per minute per IP.
         RateLimiter::for('public-forms', fn (Request $request): Limit => Limit::perMinute(5)->by($request->ip()));
 
+        // Public certificate lookup (Player ID + date of birth): 10 per minute per IP.
+        RateLimiter::for('certificate-lookup', fn (Request $request): Limit => Limit::perMinute(10)->by($request->ip()));
+
         // Site settings for the public layout, footer and contact page
         // (managed in /admin/site-settings; read from one cache entry).
         View::composer(['layouts.frontend', 'partials.footer', 'frontend.contact'], function ($view): void {

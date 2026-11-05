@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Controllers\CertificatePdfController;
 use App\Http\Controllers\RegistrationDocumentController;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -43,6 +44,8 @@ class AdminPanelProvider extends PanelProvider
             ->authenticatedRoutes(function (): void {
                 Route::get('registration-documents/{document}', RegistrationDocumentController::class)
                     ->name('registration-documents.download');
+                Route::get('certificate-pdfs/{certificate}', CertificatePdfController::class)
+                    ->name('certificates.download');
             })
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')

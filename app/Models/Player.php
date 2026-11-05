@@ -57,6 +57,8 @@ class Player extends Authenticatable
 
         static::deleting(function (Player $player): void {
             $player->documents()->get()->each->delete();
+            // Through the models, so the certificate PDFs are deleted too.
+            $player->certificates()->get()->each->delete();
         });
 
         static::deleted(function (Player $player): void {
