@@ -516,5 +516,5 @@ Announcements and press releases from the federation office will appear here.
 @endsection
 
 @push('scripts')
-<script src="{{ asset('assets/js/banner.js') }}"></script>
+<script src="@versionedAsset('assets/js/banner.js')"></script>
 @endpush

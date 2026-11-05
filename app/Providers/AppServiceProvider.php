@@ -7,6 +7,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -30,6 +31,12 @@ class AppServiceProvider extends ServiceProvider
         Model::preventLazyLoading(! $this->app->isProduction());
 
         Paginator::defaultView('partials.pagination');
+
+        // The site's own CSS/JS in public/assets is not bundled by Vite, and
+        // the server lets browsers cache it for a week. Adding the file's
+        // modification time to the URL makes browsers fetch each new deploy.
+        // Usage: href="@versionedAsset('assets/css/jfi-theme.css')"
+        Blade::directive('versionedAsset', fn (string $path): string => "<?php echo e(asset({$path}).(is_file(public_path({$path})) ? '?v='.filemtime(public_path({$path})) : '')); ?>");
 
         // Contact and registration forms: 5 submissions per minute per IP.
         RateLimiter::for('public-forms', fn (Request $request): Limit => Limit::perMinute(5)->by($request->ip()));

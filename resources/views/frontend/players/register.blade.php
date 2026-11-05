@@ -217,5 +217,5 @@ Players register under a recognized state association. No association has been r
 @endsection
 
 @push('scripts')
-<script src="{{ asset('assets/js/jfi-forms.js') }}"></script>
+<script src="@versionedAsset('assets/js/jfi-forms.js')"></script>
 @endpush

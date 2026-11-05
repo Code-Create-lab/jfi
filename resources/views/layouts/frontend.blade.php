@@ -18,10 +18,10 @@
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet"/>
-    <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet"/>
-    <link href="{{ asset('assets/css/responsive.css') }}" rel="stylesheet"/>
-    <link href="{{ asset('assets/css/jfi-theme.css') }}" rel="stylesheet"/>
-    <link href="{{ asset('assets/css/jfi-components.css') }}" rel="stylesheet"/>
+    <link href="@versionedAsset('assets/css/main.css')" rel="stylesheet"/>
+    <link href="@versionedAsset('assets/css/responsive.css')" rel="stylesheet"/>
+    <link href="@versionedAsset('assets/css/jfi-theme.css')" rel="stylesheet"/>
+    <link href="@versionedAsset('assets/css/jfi-components.css')" rel="stylesheet"/>
     <link href="{{ asset('favicon.ico') }}" rel="icon" sizes="any"/>
     <link href="{{ asset('assets/images/jfi/favicon-32.png') }}" rel="icon" sizes="32x32" type="image/png"/>
     <link href="{{ asset('assets/images/jfi/apple-touch-icon.png') }}" rel="apple-touch-icon"/>

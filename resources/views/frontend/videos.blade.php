@@ -54,5 +54,5 @@ Videos are added after each championship.
 @endsection
 
 @push('scripts')
-<script src="{{ asset('assets/js/jfi-video.js') }}"></script>
+<script src="@versionedAsset('assets/js/jfi-video.js')"></script>
 @endpush

@@ -202,6 +202,14 @@ class PagesTest extends TestCase
             ->assertSee(asset('assets/css/jfi-components.css'), false);
     }
 
+    public function test_site_stylesheets_and_scripts_carry_a_version_for_browser_caches(): void
+    {
+        $this->get(route('frontend.home'))
+            ->assertOk()
+            ->assertSee(asset('assets/css/jfi-theme.css').'?v='.filemtime(public_path('assets/css/jfi-theme.css')), false)
+            ->assertSee(asset('assets/js/banner.js').'?v='.filemtime(public_path('assets/js/banner.js')), false);
+    }
+
     private function player(string $name, string $email, string $phone, StateAssociation $association): Player
     {
         return Player::query()->create([
