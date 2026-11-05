@@ -33,6 +33,29 @@ class CertificatesTest extends TestCase
         $this->assertStringStartsWith('%PDF', Storage::disk('local')->get($certificate->pdf_path));
     }
 
+    public function test_long_names_and_titles_still_fit_on_one_page(): void
+    {
+        $event = Event::query()->create(['title' => 'All India Inter-State Senior National Jumpball Championship', 'start_date' => '2026-12-28', 'end_date' => '2027-01-02', 'city' => 'Thiruvananthapuram', 'state' => 'Kerala']);
+        $player = $this->approvedPlayer('Venkata Subramanya Lakshmi Narasimha Raghavendra Rao');
+
+        $certificate = $this->issue($player, [
+            'title' => 'Outstanding Contribution to Jumpball Award',
+            'achievement' => str_repeat('Best Defensive Player and Captain of the Winning Team ', 2),
+            'event_id' => $event->id,
+        ]);
+
+        $this->assertSame(1, $this->pageCount($certificate));
+    }
+
+    public function test_names_outside_the_core_pdf_fonts_use_the_embedded_font(): void
+    {
+        $plain = $this->issue($this->approvedPlayer('Aarav Sharma'));
+        $accented = $this->issue($this->approvedPlayer('Ānanya Śrīnivāsan'));
+
+        $this->assertStringNotContainsString('DejaVu', Storage::disk('local')->get($plain->pdf_path));
+        $this->assertStringContainsString('DejaVuSerif', Storage::disk('local')->get($accented->pdf_path));
+    }
+
     public function test_changing_printed_details_renders_a_new_pdf(): void
     {
         $certificate = $this->issue($this->approvedPlayer());
@@ -156,6 +179,11 @@ class CertificatesTest extends TestCase
         $this->travel(31)->minutes();
 
         $this->get($signedUrl)->assertForbidden();
+    }
+
+    private function pageCount(Certificate $certificate): int
+    {
+        return preg_match_all('#/Type\s*/Page\b(?!s)#', Storage::disk('local')->get($certificate->pdf_path));
     }
 
     private function approvedPlayer(string $name = 'Aarav Sharma'): Player

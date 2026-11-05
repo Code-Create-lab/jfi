@@ -84,8 +84,14 @@ class Certificate extends Model
 
         $pdf = Pdf::loadView('certificates.certificate', [
             'certificate' => $this,
-            'logo' => 'data:image/png;base64,'.base64_encode((string) file_get_contents(public_path('assets/images/jfi/certificate-logo.png'))),
-            'qrCode' => 'data:image/svg+xml;base64,'.base64_encode((string) QrCode::format('svg')->size(300)->margin(0)->errorCorrection('M')->generate($this->verificationUrl())),
+            'images' => [
+                'frame' => self::artwork('certificate-frame.svg'),
+                'emblem' => self::artwork('certificate-emblem.svg'),
+                'logo' => self::artwork('certificate-logo.png'),
+                'watermark' => self::artwork('certificate-watermark.png'),
+                'qrCode' => 'data:image/svg+xml;base64,'.base64_encode((string) QrCode::format('svg')->size(300)->margin(0)->errorCorrection('M')->generate($this->verificationUrl())),
+            ],
+            'verifyAt' => Str::after(route('frontend.certificates.index'), '://'),
         ])
             ->setPaper('a4', 'landscape')
             // Embed only the glyphs used, not the whole font (about 1 MB otherwise).
@@ -94,6 +100,17 @@ class Certificate extends Model
         Storage::disk('local')->put($path, $pdf->output());
 
         $this->forceFill(['pdf_path' => $path])->saveQuietly();
+    }
+
+    /**
+     * A certificate artwork file from public/assets/images/jfi as a data URI,
+     * so dompdf needs no file or network access to draw it.
+     */
+    private static function artwork(string $file): string
+    {
+        $mime = str_ends_with($file, '.svg') ? 'image/svg+xml' : 'image/png';
+
+        return 'data:'.$mime.';base64,'.base64_encode((string) file_get_contents(public_path('assets/images/jfi/'.$file)));
     }
 
     /**

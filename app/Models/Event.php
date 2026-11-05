@@ -61,25 +61,26 @@ class Event extends Model
 
     /**
      * Human-readable date range, e.g. "15–17 Jan 2027" or "28 Feb – 2 Mar 2027".
+     * Pass "F" for full month names, as printed on certificates.
      */
-    public function dateRange(): string
+    public function dateRange(string $month = 'M'): string
     {
         $start = $this->start_date;
         $end = $this->end_date;
 
         if ($end === null || $end->isSameDay($start)) {
-            return $start->format('j M Y');
+            return $start->format("j {$month} Y");
         }
 
         if ($start->isSameMonth($end)) {
-            return $start->format('j').'–'.$end->format('j M Y');
+            return $start->format('j').'–'.$end->format("j {$month} Y");
         }
 
         if ($start->isSameYear($end)) {
-            return $start->format('j M').' – '.$end->format('j M Y');
+            return $start->format("j {$month}").' – '.$end->format("j {$month} Y");
         }
 
-        return $start->format('j M Y').' – '.$end->format('j M Y');
+        return $start->format("j {$month} Y").' – '.$end->format("j {$month} Y");
     }
 
     /**

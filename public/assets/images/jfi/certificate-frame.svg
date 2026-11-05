@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="297" height="210" viewBox="0 0 297 210">
+<rect width="297" height="210" fill="#FFFFFF"/>
+<rect x="11" y="11" width="275" height="188" fill="#FFFCF5"/>
+<rect x="8.5" y="8.5" width="280" height="193" fill="none" stroke="#0A2463" stroke-width="5"/>
+<rect x="8.5" y="8.5" width="280" height="193" fill="none" stroke="#C9A227" stroke-width="0.35"/>
+<rect x="13.5" y="13.5" width="270" height="183" fill="none" stroke="#C9A227" stroke-width="0.5"/>
+<rect x="15.2" y="15.2" width="266.6" height="179.6" fill="none" stroke="#0A2463" stroke-width="0.18"/>
+<polygon points="13.5,11.1 15.9,13.5 13.5,15.9 11.1,13.5" fill="#C9A227"/><path d="M18.0 30.0 V18.0 H30.0" fill="none" stroke="#C9A227" stroke-width="0.6"/><polygon points="283.5,11.1 285.9,13.5 283.5,15.9 281.1,13.5" fill="#C9A227"/><path d="M279.0 30.0 V18.0 H267.0" fill="none" stroke="#C9A227" stroke-width="0.6"/><polygon points="13.5,194.1 15.9,196.5 13.5,198.9 11.1,196.5" fill="#C9A227"/><path d="M18.0 180.0 V192.0 H30.0" fill="none" stroke="#C9A227" stroke-width="0.6"/><polygon points="283.5,194.1 285.9,196.5 283.5,198.9 281.1,196.5" fill="#C9A227"/><path d="M279.0 180.0 V192.0 H267.0" fill="none" stroke="#C9A227" stroke-width="0.6"/>
+</svg>
