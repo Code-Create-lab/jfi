@@ -2754,3 +2754,13 @@ footer .social-links a{
     border: 0;
     border-radius: var(--radius-md);
 }
+
+/* Player area: sign-out button inside the mobile menu, styled like its links */
+.sidebar-logout{
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}

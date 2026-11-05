@@ -12,24 +12,30 @@
 <div class="col-lg-6">
 <div class="auth-card">
 <h2 class="title-plain fs-3 mb-4">Sign in to your account</h2>
-<form action="#" class="jfi-form gap-4" method="post">
+<x-form-alert :success="session('status')"/>
+<form action="{{ route('frontend.players.login.store') }}" class="jfi-form gap-4" method="post" novalidate>
 @csrf
 <div class="form-field">
-<label class="form-label" for="login-email">Email</label>
-<input autocomplete="email" class="form-control-jfi" id="login-email" name="email" required type="email"/>
+<label class="form-label" for="login-id">Email or Player ID</label>
+<input aria-describedby="login-id-help @error('login') login-id-error @enderror" @error('login') aria-invalid="true" @enderror autocapitalize="none" autocomplete="username" @class(['form-control-jfi', 'is-invalid' => $errors->has('login')]) id="login-id" name="login" required spellcheck="false" type="text" value="{{ old('login') }}"/>
+<p class="form-help" id="login-id-help">The email address you registered with, or your Player ID (for example JFI-2026-00001).</p>
+<x-form-error field="login" id="login-id"/>
 </div>
 <div class="form-field">
 <label class="form-label" for="login-password">Password</label>
 <div class="password-field">
-<input autocomplete="current-password" class="form-control-jfi" id="login-password" name="password" required type="password"/>
+<input @error('password') aria-describedby="login-password-error" aria-invalid="true" @enderror autocomplete="current-password" @class(['form-control-jfi', 'is-invalid' => $errors->has('password')]) id="login-password" name="password" required type="password"/>
 <button aria-controls="login-password" aria-label="Show password" class="password-toggle" data-password-toggle type="button"><i aria-hidden="true" class="fa-regular fa-eye"></i></button>
 </div>
+<x-form-error field="password" id="login-password"/>
 </div>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
 <label class="choice">
-<input name="remember" type="checkbox" value="1"/> Keep me signed in on this device
+<input @checked(old('remember')) name="remember" type="checkbox" value="1"/> Keep me signed in on this device
 </label>
-<button class="jfi-btn jfi-btn-primary jfi-btn-block" type="submit">Sign In</button>
-<p class="form-help mb-0">Forgotten your password? Contact the <a href="{{ route('frontend.contact') }}">federation office</a> to reset it.</p>
+<a class="form-help" href="{{ route('player.password.request') }}">Forgotten your password?</a>
+</div>
+<button class="jfi-btn jfi-btn-primary jfi-btn-block" data-busy-label="Signing in..." type="submit">Sign In</button>
 </form>
 </div>
 </div>

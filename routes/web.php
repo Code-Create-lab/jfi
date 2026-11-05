@@ -13,6 +13,11 @@ use App\Http\Controllers\Frontend\OfficeBearerController;
 use App\Http\Controllers\Frontend\PageController;
 use App\Http\Controllers\Frontend\PlayerController;
 use App\Http\Controllers\Frontend\StateAssociationController;
+use App\Http\Controllers\Player\CertificateController as PlayerCertificateController;
+use App\Http\Controllers\Player\DashboardController;
+use App\Http\Controllers\Player\LoginController;
+use App\Http\Controllers\Player\PasswordController;
+use App\Http\Controllers\Player\PhotoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,8 +30,8 @@ use Illuminate\Support\Facades\Route;
 | controllers with FormRequests (Phase 2B), throttled by the "public-forms"
 | limiter. Certificates (Phase 3): lookup by Player ID + date of birth,
 | throttled by "certificate-lookup", gives 30-minute signed PDF links; the QR
-| code on each PDF opens the verify page. Player login is still a view route
-| until Phase 4. Contact details come from settings.
+| code on each PDF opens the verify page. Contact details come from settings.
+| Player sign-in (Phase 4) is on the "player" guard; the player area follows.
 |
 */
 
@@ -46,7 +51,10 @@ Route::name('frontend.')->group(function () {
     Route::get('/players', [PlayerController::class, 'index'])->name('players.index');
     Route::get('/players/register', [PlayerController::class, 'create'])->name('players.register');
     Route::post('/players/register', [PlayerController::class, 'store'])->middleware('throttle:public-forms')->name('players.store');
-    Route::view('/players/login', 'frontend.players.login')->name('players.login');
+    Route::middleware('guest:player')->group(function () {
+        Route::get('/players/login', [LoginController::class, 'create'])->name('players.login');
+        Route::post('/players/login', [LoginController::class, 'store'])->middleware('throttle:login')->name('players.login.store');
+    });
     Route::get('/international-players', [PlayerController::class, 'international'])->name('players.international');
 
     Route::get('/events/current', [EventController::class, 'index'])->defaults('period', 'current')->name('events.current');
@@ -80,4 +88,31 @@ Route::name('frontend.')->group(function () {
     Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:public-forms')->name('contact.store');
     Route::get('/privacy-policy', PageController::class)->defaults('slug', 'privacy-policy')->name('legal.privacy');
     Route::get('/terms-and-conditions', PageController::class)->defaults('slug', 'terms-and-conditions')->name('legal.terms');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Player Area
+|--------------------------------------------------------------------------
+|
+| Registered players on the "player" guard (admins use the Filament panel
+| at /admin). Pending and rejected players can sign in and see their status;
+| certificate downloads also need an approved registration.
+|
+*/
+
+Route::prefix('player')->name('player.')->group(function () {
+    Route::middleware('guest:player')->group(function () {
+        Route::get('/forgot-password', [PasswordController::class, 'request'])->name('password.request');
+        Route::post('/forgot-password', [PasswordController::class, 'email'])->middleware('throttle:public-forms')->name('password.email');
+        Route::get('/reset-password/{token}', [PasswordController::class, 'reset'])->name('password.reset');
+        Route::post('/reset-password', [PasswordController::class, 'update'])->middleware('throttle:public-forms')->name('password.update');
+    });
+
+    Route::middleware('auth:player')->group(function () {
+        Route::get('/', DashboardController::class)->name('dashboard');
+        Route::get('/photo', PhotoController::class)->name('photo');
+        Route::get('/certificates/{certificate}/download', PlayerCertificateController::class)->middleware('player.approved')->name('certificates.download');
+        Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+    });
 });

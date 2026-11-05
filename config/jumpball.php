@@ -73,7 +73,7 @@ return [
             ['label' => 'Recognized Associations', 'route' => 'frontend.associations.index'],
             ['label' => 'Register an Association', 'route' => 'frontend.associations.register'],
         ]],
-        ['label' => 'Players', 'active' => ['frontend.players.*', 'frontend.certificates.*'], 'children' => [
+        ['label' => 'Players', 'active' => ['frontend.players.*', 'frontend.certificates.*', 'player.*'], 'children' => [
             ['label' => 'Player Registration', 'route' => 'frontend.players.register'],
             ['label' => 'Player Database', 'route' => 'frontend.players.index'],
             ['label' => 'International Players', 'route' => 'frontend.players.international'],

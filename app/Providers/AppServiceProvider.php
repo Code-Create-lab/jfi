@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -43,6 +44,30 @@ class AppServiceProvider extends ServiceProvider
 
         // Public certificate lookup (Player ID + date of birth): 10 per minute per IP.
         RateLimiter::for('certificate-lookup', fn (Request $request): Limit => Limit::perMinute(10)->by($request->ip()));
+
+        // Player sign-in: 5 attempts per minute for each email or Player ID from one IP.
+        RateLimiter::for('login', fn (Request $request): Limit => Limit::perMinute(5)->by(Str::lower(trim((string) $request->input('login'))).'|'.$request->ip()));
+
+        // Header and mobile menu: "Player Login" becomes "My Account" and "Log out"
+        // once a player is signed in.
+        View::composer(['partials.header', 'partials.sidebar'], function ($view): void {
+            $player = auth('player')->user();
+
+            $view->with([
+                'signedInPlayer' => $player,
+                'navigation' => collect(config('jumpball.navigation'))->map(function (array $item) use ($player): array {
+                    if ($player && isset($item['children'])) {
+                        $item['children'] = collect($item['children'])
+                            ->flatMap(fn (array $child): array => $child['route'] === 'frontend.players.login'
+                                ? [['label' => 'My Account', 'route' => 'player.dashboard'], ['label' => 'Log out', 'logout' => true]]
+                                : [$child])
+                            ->all();
+                    }
+
+                    return $item;
+                })->all(),
+            ]);
+        });
 
         // Site settings for the public layout, footer and contact page
         // (managed in /admin/site-settings; read from one cache entry).

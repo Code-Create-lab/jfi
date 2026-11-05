@@ -9,7 +9,7 @@
 <button aria-label="Close menu" class="close-btn" type="button"><i aria-hidden="true" class="fa-solid fa-xmark"></i></button>
 </div>
 <ul class="menu">
-@foreach (config('jumpball.navigation') as $item)
+@foreach ($navigation as $item)
 @if (isset($item['children']))
 <li class="sidebar-dropdown">
 <div class="dropdown-header">
@@ -18,7 +18,11 @@
 </div>
 <ul class="sidebar-dropdown-menu">
 @foreach ($item['children'] as $child)
+@if (isset($child['logout']))
+<li><form action="{{ route('player.logout') }}" method="post">@csrf<button class="sidebar-logout" type="submit">{{ $child['label'] }}</button></form></li>
+@else
 <li><a href="{{ route($child['route']) }}">{{ $child['label'] }}</a></li>
+@endif
 @endforeach
 </ul>
 </li>
@@ -26,7 +30,7 @@
 <li @class(['below-dropdown' => $loop->last])><a href="{{ route($item['route']) }}">{{ $item['label'] }}</a></li>
 @endif
 @endforeach
-<li class="below-dropdown"><a href="{{ route('frontend.players.register') }}">Register as a Player</a></li>
+<li class="below-dropdown"><a href="{{ $signedInPlayer ? route('player.dashboard') : route('frontend.players.register') }}">{{ $signedInPlayer ? 'My Account' : 'Register as a Player' }}</a></li>
 </ul>
 </div>
 </div>

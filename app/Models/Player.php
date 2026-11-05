@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Gender;
 use App\Enums\RegistrationStatus;
+use App\Mail\PlayerPasswordReset;
 use App\Models\Concerns\Reviewable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -71,6 +73,17 @@ class Player extends Authenticatable
                 Storage::disk('local')->delete($player->photo);
             }
         });
+    }
+
+    /**
+     * Sends the player-area reset link (the default notification would link
+     * to a "password.reset" route this site does not have).
+     *
+     * @param  string  $token
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        Mail::to($this->email)->send(new PlayerPasswordReset($this, $token));
     }
 
     /**

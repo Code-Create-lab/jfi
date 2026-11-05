@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * verification_code is random and used in the QR verification URL, so
@@ -85,6 +86,20 @@ class Certificate extends Model
         Storage::disk('local')->put($path, $this->renderPdf());
 
         $this->forceFill(['pdf_path' => $path])->saveQuietly();
+    }
+
+    /**
+     * The PDF as a download named after the certificate number; a missing file
+     * is rendered again first. Callers decide who may download (admin panel
+     * route, signed lookup link, or the owning player).
+     */
+    public function download(): StreamedResponse
+    {
+        if (! $this->pdf_path || ! Storage::disk('local')->exists($this->pdf_path)) {
+            $this->generatePdf();
+        }
+
+        return Storage::disk('local')->download($this->pdf_path, $this->certificate_no.'.pdf');
     }
 
     /**
