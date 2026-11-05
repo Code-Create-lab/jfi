@@ -202,6 +202,15 @@ class PagesTest extends TestCase
             ->assertSee(asset('assets/css/jfi-components.css'), false);
     }
 
+    public function test_footer_credits_the_developer(): void
+    {
+        $this->get(route('frontend.home'))
+            ->assertOk()
+            ->assertSee('Designed &amp; Developed by', false)
+            ->assertSee('href="https://10xcart.snehal.info/"', false)
+            ->assertSee('href="https://www.instagram.com/10xcart"', false);
+    }
+
     public function test_site_stylesheets_and_scripts_carry_a_version_for_browser_caches(): void
     {
         $this->get(route('frontend.home'))

@@ -66,7 +66,10 @@
 <div class="divider"></div>
 <a class="legalink" href="{{ route('frontend.legal.terms') }}">Terms &amp; Conditions</a>
 </div>
+<div class="footer-copyright-block">
 <p class="mb-0 footer-copyright">&copy; {{ date('Y') }} {{ $site['footer_text'] }}</p>
+<p class="mb-0 footer-credit">Designed &amp; Developed by <a href="https://10xcart.snehal.info/" rel="noopener" target="_blank">10xCart</a> &middot; <a href="https://www.instagram.com/10xcart" rel="noopener" target="_blank"><i aria-hidden="true" class="fa-brands fa-instagram"></i> @10xcart<span class="visually-hidden"> on Instagram</span></a></p>
+</div>
 </div>
 </div>
 </div>
