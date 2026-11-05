@@ -274,7 +274,7 @@ Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time
 
 **Update rules:** at the end of every phase, tick only items that work in the code, set "Current phase", add one line to the Log, and fix any section of this file the phase made outdated. Requests outside sections 4–6 go to "Change requests", never into the code.
 
-**Current phase:** 5 done — next: Phase 6 — Testing and client review
+**Current phase:** 6 in progress — tests and scope audit done; next: client review round with `docs/qa-checklist.md`
 
 ### Done before the phases
 - [x] Database layer: migrations, models, enums, `config/jumpball.php`, seeders (section 14)
@@ -317,8 +317,8 @@ Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time
 - [x] Responsive + performance pass
 
 ### Phase 6 — Testing and client review
-- [ ] Feature tests green
-- [ ] Scope audit (sections 4–6) + `docs/qa-checklist.md`
+- [x] Feature tests green
+- [x] Scope audit (sections 4–6) + `docs/qa-checklist.md`
 - [ ] Client review round done
 
 > Milestone: final payment (20%) before handover.
@@ -344,3 +344,4 @@ Phase prompts: `docs/PHASES.md` (one phase per session). Check progress any time
 - 2026-11-05 — Phase 4: player guard, sign-in by email or Player ID (5/min, remember me), logout, forgot/reset password mail, read-only dashboard with status/remarks, details, private photo and own certificates (approved only, ownership 404), player-aware header/menu. 16 new tests, 164 green. Sign-in, dashboard and own download checked over HTTP on demo data (browser froze during the check). Next: Phase 5.
 - 2026-11-05 — Phase 4 audit: all items verified; added tests for remember me, new session on sign-in, intended redirect and own photo (19 player-area tests).
 - 2026-11-05 — Phase 5: branded email layout (logo, JFI theme, contact footer) with a render test for all 4 mails; `APP_NAME` fixed in `.env.example`; styled 404/419/429/500/503; robots.txt disallows /admin and /player; SEO audit of 30 pages (unique titles, descriptions, OG, canonical, alt text, labelled fields) clean; no horizontal scroll at 375/768/1280; home icons lazy-loaded; `php artisan optimize` runs clean and the site works cached. 176 tests green. Next: Phase 6.
+- 2026-11-05 — Phase 5 audit: all items verified (favicons, table scroll wrapper, mobile menu opens and closes). Phase 6: 176 tests green covering every flow on the Phase 6 list (private-files-by-URL test lives in the untracked `tests/Feature/RequirementsAuditTest.php`); scope audit: all 29 pages, §5 and §6 built, no ❌; ⚠️ only for client inputs (five content pages still placeholder text, SMTP, photos, certificate signatures). `docs/qa-checklist.md` written. Next: client review round.
