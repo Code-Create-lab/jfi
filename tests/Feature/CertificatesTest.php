@@ -66,6 +66,17 @@ class CertificatesTest extends TestCase
         $this->assertStringStartsWith('%PDF', Storage::disk('local')->get($certificate->pdf_path));
     }
 
+    public function test_correcting_a_player_name_updates_their_certificate_pdfs(): void
+    {
+        $player = $this->approvedPlayer();
+        $certificate = $this->issue($player);
+        Storage::disk('local')->put($certificate->pdf_path, 'old name');
+
+        $player->update(['name' => 'Aarav Kumar Sharma']);
+
+        $this->assertStringStartsWith('%PDF', Storage::disk('local')->get($certificate->pdf_path));
+    }
+
     public function test_deleting_a_player_deletes_their_certificate_pdfs(): void
     {
         $player = $this->approvedPlayer();
@@ -145,6 +156,25 @@ class CertificatesTest extends TestCase
         }
     }
 
+    public function test_lookup_ignores_spaces_around_the_player_id(): void
+    {
+        $player = $this->approvedPlayer();
+        $this->issue($player);
+
+        $this->post(route('frontend.certificates.lookup'), ['player_id' => '  '.$player->registration_no.' ', 'date_of_birth' => '2008-01-15'])
+            ->assertRedirect(route('frontend.certificates.index').'#lookup-results')
+            ->assertSessionHas('lookup_player', $player->id);
+    }
+
+    public function test_lookup_rejects_a_filled_honeypot(): void
+    {
+        $player = $this->approvedPlayer();
+
+        $this->post(route('frontend.certificates.lookup'), ['player_id' => $player->registration_no, 'date_of_birth' => '2008-01-15', 'website' => 'https://spam.example'])
+            ->assertSessionHasErrors(['website' => 'Your request could not be completed. Please try again.'])
+            ->assertSessionMissing('lookup_player');
+    }
+
     public function test_lookup_requires_both_fields(): void
     {
         $this->post(route('frontend.certificates.lookup'), [])
@@ -169,15 +199,35 @@ class CertificatesTest extends TestCase
     {
         $certificate = $this->issue($this->approvedPlayer());
 
-        $this->get(URL::temporarySignedRoute('frontend.certificates.download', now()->addMinutes(30), $certificate))
+        $this->get(URL::temporarySignedRoute('frontend.certificates.download', now()->addMinutes(30), $certificate, absolute: false))
             ->assertOk()
             ->assertDownload($certificate->certificate_no.'.pdf');
+    }
+
+    public function test_a_signed_link_still_works_on_another_host_name(): void
+    {
+        $certificate = $this->issue($this->approvedPlayer());
+        $path = URL::temporarySignedRoute('frontend.certificates.download', now()->addMinutes(30), $certificate, absolute: false);
+
+        $this->get('https://www.jfi.example'.$path)->assertOk();
+    }
+
+    public function test_a_missing_pdf_is_rebuilt_on_download(): void
+    {
+        $certificate = $this->issue($this->approvedPlayer());
+        Storage::disk('local')->delete($certificate->pdf_path);
+
+        $this->get(URL::temporarySignedRoute('frontend.certificates.download', now()->addMinutes(30), $certificate, absolute: false))
+            ->assertOk()
+            ->assertDownload($certificate->certificate_no.'.pdf');
+
+        Storage::disk('local')->assertExists($certificate->pdf_path);
     }
 
     public function test_unsigned_and_expired_links_are_rejected(): void
     {
         $certificate = $this->issue($this->approvedPlayer());
-        $signedUrl = URL::temporarySignedRoute('frontend.certificates.download', now()->addMinutes(30), $certificate);
+        $signedUrl = URL::temporarySignedRoute('frontend.certificates.download', now()->addMinutes(30), $certificate, absolute: false);
 
         $this->get(route('frontend.certificates.download', $certificate))->assertForbidden();
 

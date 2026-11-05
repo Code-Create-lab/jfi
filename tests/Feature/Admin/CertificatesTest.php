@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Enums\Gender;
 use App\Enums\RegistrationStatus;
+use App\Filament\Resources\Certificates\CertificateResource;
 use App\Filament\Resources\Certificates\Pages\CreateCertificate;
 use App\Filament\Resources\Certificates\Pages\EditCertificate;
 use App\Filament\Resources\Certificates\Pages\ListCertificates;
@@ -113,6 +114,26 @@ class CertificatesTest extends TestCase
 
         $this->assertModelMissing($certificate);
         Storage::disk('local')->assertMissing($certificate->pdf_path);
+    }
+
+    public function test_admin_pages_load(): void
+    {
+        $certificate = $this->issueTo($this->makePlayer('Aarav Sharma', approved: true));
+
+        $this->get(CertificateResource::getUrl('index'))->assertOk()->assertSee($certificate->certificate_no);
+        $this->get(CertificateResource::getUrl('create'))->assertOk()->assertSee('Issue certificate');
+        $this->get(CertificateResource::getUrl('edit', ['record' => $certificate]))->assertOk()->assertSee('Download PDF');
+    }
+
+    public function test_table_search_finds_certificates_by_player_id(): void
+    {
+        $aarav = $this->issueTo($this->makePlayer('Aarav Sharma', approved: true));
+        $priya = $this->issueTo($this->makePlayer('Priya Nair', approved: true));
+
+        Livewire::test(ListCertificates::class)
+            ->searchTable($priya->player->registration_no)
+            ->assertCanSeeTableRecords([$priya])
+            ->assertCanNotSeeTableRecords([$aarav]);
     }
 
     public function test_admin_download_needs_an_admin_session(): void

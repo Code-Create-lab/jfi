@@ -53,6 +53,11 @@ class Player extends Authenticatable
             if ($player->wasChanged('photo') && $player->getOriginal('photo')) {
                 Storage::disk('local')->delete($player->getOriginal('photo'));
             }
+
+            // Certificates print the name and Player ID; keep the PDFs in step with corrections.
+            if ($player->wasChanged(['name', 'registration_no'])) {
+                $player->certificates()->get()->each->generatePdf();
+            }
         });
 
         static::deleting(function (Player $player): void {

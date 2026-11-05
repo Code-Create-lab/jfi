@@ -37,7 +37,7 @@ class CertificateController extends Controller
         return view('frontend.certificates.index', [
             'lookupPlayer' => $player,
             'downloadLinks' => $player?->certificates->mapWithKeys(fn (Certificate $certificate): array => [
-                $certificate->id => URL::temporarySignedRoute('frontend.certificates.download', now()->addMinutes(self::LINK_MINUTES), $certificate),
+                $certificate->id => URL::temporarySignedRoute('frontend.certificates.download', now()->addMinutes(self::LINK_MINUTES), $certificate, absolute: false),
             ]),
         ]);
     }

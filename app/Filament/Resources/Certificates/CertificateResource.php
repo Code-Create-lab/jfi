@@ -58,7 +58,7 @@ class CertificateResource extends Resource
             ->icon(Heroicon::OutlinedArrowPath)
             ->color('gray')
             ->requiresConfirmation()
-            ->modalDescription('Renders the PDF again from the current details, for example after the player\'s name was corrected. The certificate number and QR code stay the same.')
+            ->modalDescription('Renders the PDF again from the current details, for example after the event was edited. Name corrections on the player update the PDF automatically. The certificate number and QR code stay the same.')
             ->action(function (Certificate $record): void {
                 $record->generatePdf();
 

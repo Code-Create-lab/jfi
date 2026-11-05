@@ -62,7 +62,8 @@ Route::name('frontend.')->group(function () {
     Route::get('/certificates', [CertificateController::class, 'index'])->name('certificates.index');
     Route::post('/certificates', [CertificateController::class, 'lookup'])->middleware('throttle:certificate-lookup')->name('certificates.lookup');
     Route::get('/certificates/verify/{code}', [CertificateController::class, 'verify'])->name('certificates.verify');
-    Route::get('/certificates/{certificate}/download', CertificatePdfController::class)->middleware('signed')->name('certificates.download');
+    // Relative signatures: the link stays valid behind proxies and on any host alias (www, http/https).
+    Route::get('/certificates/{certificate}/download', CertificatePdfController::class)->middleware('signed:relative')->name('certificates.download');
 
     Route::get('/news', [NewsController::class, 'index'])->name('news.index');
     Route::get('/news/{slug}', [NewsController::class, 'show'])->name('news.show');
