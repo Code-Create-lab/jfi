@@ -224,10 +224,10 @@ class ContentModulesTest extends TestCase
     {
         $this->seed(SettingSeeder::class);
         $keys = Setting::query()->count();
-        $this->assertSame('info@example.com', Setting::get('contact_email'));
+        $this->assertSame('jumpballfederationofindia@gmail.com', Setting::get('contact_email'));
 
         Livewire::test(SiteSettings::class)
-            ->assertSchemaStateSet(['contact_email' => 'info@example.com'], 'form')
+            ->assertSchemaStateSet(['contact_email' => 'jumpballfederationofindia@gmail.com'], 'form')
             ->fillForm(['contact_email' => 'office@jfi.example', 'facebook_url' => 'https://facebook.com/jfi'], 'form')
             ->call('save')
             ->assertHasNoFormErrors([], 'form')

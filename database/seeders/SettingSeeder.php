@@ -16,9 +16,9 @@ class SettingSeeder extends Seeder
         $settings = [
             'site_name' => 'Jumpball Federation of India',
             'tagline' => 'Raising the Game Across India',
-            'contact_email' => 'info@example.com',
-            'contact_phone' => '+91 00000 00000',
-            'contact_address' => 'Address to be confirmed',
+            'contact_email' => 'jumpballfederationofindia@gmail.com',
+            'contact_phone' => '+91 79799 06275',
+            'contact_address' => 'At + PO Kamruddinpur, Ward No. 05, Begusarai, Bihar - 851134',
             'map_embed' => null,
             'facebook_url' => null,
             'instagram_url' => null,

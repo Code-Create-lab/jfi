@@ -45,8 +45,8 @@ return [
 
     'national_bearers' => [
         ['name' => 'Rupesh Utam', 'designation' => 'President', 'location' => 'Pune, Maharashtra', 'photo' => 'assets/images/jfi/bearers/rupesh-utam.webp'],
-        ['name' => 'Ram Pravesh Kumar', 'designation' => 'Secretary General', 'location' => null, 'photo' => 'assets/images/jfi/bearers/ram-pravesh-kumar.webp'],
-        ['name' => 'Rajesh Ranjan', 'designation' => 'Treasurer', 'location' => null, 'photo' => 'assets/images/jfi/bearers/rajesh-ranjan.webp'],
+        ['name' => 'Ram Pravesh Kumar', 'designation' => 'Secretary General', 'location' => 'Begusarai, Bihar', 'photo' => 'assets/images/jfi/bearers/ram-pravesh-kumar.webp'],
+        ['name' => 'Rajesh Ranjan', 'designation' => 'Treasurer', 'location' => 'Deoghar, Jharkhand', 'photo' => 'assets/images/jfi/bearers/rajesh-ranjan.webp'],
     ],
 
     /*

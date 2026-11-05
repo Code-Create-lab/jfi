@@ -1535,6 +1535,12 @@ input[type="file"].form-control-jfi::file-selector-button{
     text-transform: none;
 }
 
+.download-actions{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
 .download-item p{
     margin: 0 0 8px;
     font-size: 15px;
@@ -2361,7 +2367,7 @@ input[type="file"].form-control-jfi::file-selector-button{
         padding: 18px;
     }
 
-    .download-item .jfi-btn{
+    .download-actions{
         grid-column: 1 / -1;
     }
 

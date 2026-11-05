@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             SettingSeeder::class,
             PageSeeder::class,
             OfficeBearerSeeder::class,
+            DownloadSeeder::class,
         ]);
     }
 }

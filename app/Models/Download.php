@@ -23,6 +23,15 @@ class Download extends Model
     }
 
     /**
+     * Whether browsers can display the file inline (images and PDFs), so the
+     * public list can offer a "View" link next to "Download".
+     */
+    public function isViewableInBrowser(): bool
+    {
+        return in_array($this->fileExtension(), ['PDF', 'JPG', 'JPEG', 'PNG'], true);
+    }
+
+    /**
      * @return array<string, string>
      */
     protected function storedFiles(): array

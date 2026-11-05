@@ -69,7 +69,12 @@ The federation office will publish the official rule book here.
 @endif
 </div>
 </div>
+<div class="download-actions">
+@if ($download->isViewableInBrowser())
+<a class="jfi-btn jfi-btn-outline" href="{{ $fileUrl($download) }}" rel="noopener" target="_blank"><i aria-hidden="true" class="fa-regular fa-eye"></i> View<span class="visually-hidden"> {{ $download->title }} (opens in a new tab)</span></a>
+@endif
 <a class="jfi-btn jfi-btn-outline" download href="{{ $fileUrl($download) }}"><i aria-hidden="true" class="fa-solid fa-download"></i> Download<span class="visually-hidden"> {{ $download->title }} ({{ $download->fileExtension() }})</span></a>
+</div>
 </li>
 @endforeach
 </ul>
