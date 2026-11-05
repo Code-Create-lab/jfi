@@ -214,6 +214,39 @@ class PagesTest extends TestCase
             ->assertSee(asset('assets/css/jfi-components.css'), false);
     }
 
+    /**
+     * @return array<string, array{string, string}>
+     */
+    public static function errorPageProvider(): array
+    {
+        return [
+            '419' => ['errors.419', 'Page Expired'],
+            '429' => ['errors.429', 'Too Many Attempts'],
+            '500' => ['errors.500', 'Something Went Wrong'],
+            '503' => ['errors.503', 'Back Shortly'],
+        ];
+    }
+
+    #[DataProvider('errorPageProvider')]
+    public function test_error_pages_use_the_site_style(string $view, string $title): void
+    {
+        $this->view($view)
+            ->assertSee('<title>'.$title.' | JFI</title>', false)
+            ->assertSee('<meta name="robots" content="noindex"/>', false)
+            ->assertSee(asset('assets/images/jfi-logo.png'), false);
+    }
+
+    public function test_too_many_attempts_shows_the_styled_page(): void
+    {
+        foreach (range(1, 10) as $attempt) {
+            $this->post(route('frontend.certificates.lookup'), ['player_id' => 'JFI-2026-99999', 'date_of_birth' => '2008-01-15']);
+        }
+
+        $this->post(route('frontend.certificates.lookup'), ['player_id' => 'JFI-2026-99999', 'date_of_birth' => '2008-01-15'])
+            ->assertTooManyRequests()
+            ->assertSee('Too Many Attempts');
+    }
+
     public function test_footer_credits_the_developer(): void
     {
         $this->get(route('frontend.home'))

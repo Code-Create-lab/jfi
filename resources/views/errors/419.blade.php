@@ -1,0 +1,1 @@
+@include('errors.page', ['code' => 419, 'title' => 'Page Expired', 'message' => 'The form was open for too long, so it has expired for your security. Go back, refresh the page and submit the form again.'])

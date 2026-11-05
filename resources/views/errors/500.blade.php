@@ -1,0 +1,1 @@
+@include('errors.page', ['code' => 500, 'title' => 'Something Went Wrong', 'message' => 'The website had a problem showing this page. Please try again in a few minutes. If it keeps happening, contact the federation office.', 'links' => false])

@@ -115,4 +115,23 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Markdown Mail Theme
+    |--------------------------------------------------------------------------
+    |
+    | All emails use the JFI layout in resources/views/vendor/mail: logo
+    | header, navy and gold theme (themes/jfi.css) and the federation's
+    | contact details from Site Settings in the footer.
+    |
+    */
+
+    'markdown' => [
+        'theme' => 'jfi',
+
+        'paths' => [
+            resource_path('views/vendor/mail'),
+        ],
+    ],
+
 ];

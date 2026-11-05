@@ -254,7 +254,7 @@
 <div class="image-container">
 <div class="service-icon-container">
 {{-- <div class="service-icon">
-<img alt="" class="img-fluid" src="{{ $img($link['icon']) }}"/>
+<img alt="" class="img-fluid" loading="lazy" src="{{ $img($link['icon']) }}"/>
 </div> --}}
 </div>
 <img alt="" class="service-img" loading="lazy" src="{{ $img($link['photo']) }}"/>
@@ -323,7 +323,7 @@ The next championship dates will be published here and in the official circulars
 <div class="col">
 <div @class(['card card-chooseus animate-box animate__animated', 'bg-accent-color' => $loop->index === 1]) data-animate="animate__fadeInRight">
 <div class="chooseus-icon">
-<img alt="" class="img-fluid" src="{{ $img($pillar['icon']) }}"/>
+<img alt="" class="img-fluid" loading="lazy" src="{{ $img($pillar['icon']) }}"/>
 </div>
 <h3 @class(['chooseus-title', 'secondary-accent' => $loop->index === 1])><a class="stretched-link" href="{{ route($pillar['route']) }}">{{ $pillar['title'] }}</a></h3>
 <span aria-hidden="true" class="chooseus-btn">
@@ -363,7 +363,7 @@ The next championship dates will be published here and in the official circulars
 <div class="d-flex flex-column flex-md-row gspace-2 gspace-md-5 justify-content-start align-items-center align-items-md-start text-center text-md-start animate-box animate__animated" data-animate="animate__fadeInRight">
 <div>
 <div class="community-icon">
-<img alt="" class="img-fluid" src="{{ $img($item['icon']) }}"/>
+<img alt="" class="img-fluid" loading="lazy" src="{{ $img($item['icon']) }}"/>
 </div>
 </div>
 <div class="d-flex flex-column">
