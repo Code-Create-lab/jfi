@@ -253,9 +253,9 @@
 <div class="card card-service animate-box animate__animated" data-animate="animate__fadeInUp">
 <div class="image-container">
 <div class="service-icon-container">
-<div class="service-icon">
+{{-- <div class="service-icon">
 <img alt="" class="img-fluid" src="{{ $img($link['icon']) }}"/>
-</div>
+</div> --}}
 </div>
 <img alt="" class="service-img" loading="lazy" src="{{ $img($link['photo']) }}"/>
 <div class="service-detail-container">
