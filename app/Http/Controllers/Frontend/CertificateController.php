@@ -56,13 +56,13 @@ class CertificateController extends Controller
 
         if (! $player) {
             return redirect()
-                ->route('frontend.certificates.index')
+                ->to(route('frontend.certificates.index').'#find-certificate')
                 ->withInput($request->only('player_id'))
                 ->with('lookup_failed', true);
         }
 
         return redirect()
-            ->route('frontend.certificates.index')
+            ->to(route('frontend.certificates.index').'#lookup-results')
             ->withInput($request->only('player_id'))
             ->with('lookup_player', $player->id);
     }

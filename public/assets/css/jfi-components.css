@@ -1500,7 +1500,29 @@ input[type="file"].form-control-jfi::file-selector-button{
 }
 
 .lookup-results-head{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px 24px;
     margin-bottom: 20px;
+}
+
+/* Lookup redirects to these anchors; keep a little space above them */
+#lookup-results,
+#find-certificate{
+    scroll-margin-top: 24px;
+}
+
+.certificate-item .file-icon{
+    background-color: var(--jfi-navy);
+    color: var(--jfi-gold);
+    font-size: 20px;
+}
+
+.jfi-btn[aria-busy="true"]{
+    opacity: .75;
+    cursor: progress;
 }
 
 .download-list{
@@ -2395,6 +2417,11 @@ input[type="file"].form-control-jfi::file-selector-button{
 
     .download-actions{
         grid-column: 1 / -1;
+    }
+
+    .download-actions .jfi-btn{
+        flex: 1 1 auto;
+        justify-content: center;
     }
 
     .featured-download{

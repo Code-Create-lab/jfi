@@ -82,7 +82,18 @@ class Certificate extends Model
 
         $path = 'certificates/'.$this->certificate_no.'.pdf';
 
-        $pdf = Pdf::loadView('certificates.certificate', [
+        Storage::disk('local')->put($path, $this->renderPdf());
+
+        $this->forceFill(['pdf_path' => $path])->saveQuietly();
+    }
+
+    /**
+     * The certificate as PDF bytes, drawn from the player and event relations
+     * already on the model (generatePdf() loads them first).
+     */
+    public function renderPdf(): string
+    {
+        return Pdf::loadView('certificates.certificate', [
             'certificate' => $this,
             'images' => [
                 'frame' => self::artwork('certificate-frame.svg'),
@@ -95,11 +106,8 @@ class Certificate extends Model
         ])
             ->setPaper('a4', 'landscape')
             // Embed only the glyphs used, not the whole font (about 1 MB otherwise).
-            ->setOption('isFontSubsettingEnabled', true);
-
-        Storage::disk('local')->put($path, $pdf->output());
-
-        $this->forceFill(['pdf_path' => $path])->saveQuietly();
+            ->setOption('isFontSubsettingEnabled', true)
+            ->output();
     }
 
     /**

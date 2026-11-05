@@ -17,6 +17,14 @@ class LookupCertificatesRequest extends FormRequest
     }
 
     /**
+     * Land on the form, not the top of the page, so the errors are in view.
+     */
+    protected function getRedirectUrl(): string
+    {
+        return route('frontend.certificates.index').'#find-certificate';
+    }
+
+    /**
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array

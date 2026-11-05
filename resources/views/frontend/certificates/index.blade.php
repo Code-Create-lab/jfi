@@ -9,16 +9,23 @@
 <section class="page-section">
 <div class="hero-container">
 @if ($lookupPlayer)
-<section aria-labelledby="lookup-results-title" class="lookup-results mb-5">
+<section aria-labelledby="lookup-results-title" class="lookup-results mb-5" id="lookup-results">
 <div class="lookup-results-head">
+<div>
 <h2 class="title-plain fs-3 mb-1" id="lookup-results-title">Certificates for {{ $lookupPlayer->name }}</h2>
-<p class="mb-0">Player ID <span class="player-id">{{ $lookupPlayer->registration_no }}</span></p>
+<p class="mb-0">Player ID <span class="player-id">{{ $lookupPlayer->registration_no }}</span>
+@if ($lookupPlayer->certificates->isNotEmpty())
+&middot; <span class="text-nowrap">{{ $lookupPlayer->certificates->count() }} {{ Str::plural('certificate', $lookupPlayer->certificates->count()) }}</span>
+@endif
+</p>
+</div>
+<a class="jfi-link" href="#find-certificate">Search again <i aria-hidden="true" class="fa-solid fa-arrow-down"></i></a>
 </div>
 @if ($lookupPlayer->certificates->isNotEmpty())
 <ul class="download-list">
 @foreach ($lookupPlayer->certificates as $certificate)
-<li class="download-item">
-<span aria-hidden="true" class="file-icon">PDF</span>
+<li class="download-item certificate-item">
+<span aria-hidden="true" class="file-icon"><i class="fa-solid fa-award"></i></span>
 <div>
 <h3 class="download-title">{{ $certificate->title }}</h3>
 @if ($certificate->achievement || $certificate->event)
@@ -29,11 +36,14 @@
 <span>Issued <time datetime="{{ $certificate->issued_on->toDateString() }}">{{ $certificate->issued_on->format('j M Y') }}</time></span>
 </div>
 </div>
+<div class="download-actions">
+<a class="jfi-btn jfi-btn-outline" href="{{ route('frontend.certificates.verify', $certificate->verification_code) }}" rel="noopener" target="_blank"><i aria-hidden="true" class="fa-solid fa-shield-halved"></i> Verify<span class="visually-hidden"> {{ $certificate->title }} (opens in a new tab)</span></a>
 <a class="jfi-btn jfi-btn-primary" href="{{ $downloadLinks[$certificate->id] }}"><i aria-hidden="true" class="fa-solid fa-download"></i> Download PDF<span class="visually-hidden"> {{ $certificate->title }}</span></a>
+</div>
 </li>
 @endforeach
 </ul>
-<p class="form-help mt-3 mb-0">For your security these download links work for 30 minutes. Search again to get new links.</p>
+<p class="form-help mt-3 mb-0"><i aria-hidden="true" class="fa-solid fa-lock"></i> For your security, download links work for 30 minutes. The Verify page can be shared with anyone who needs to check the certificate.</p>
 @else
 <x-empty-state icon="fa-regular fa-file-lines" title="No certificates yet">
 No certificates have been issued to this Player ID yet. They appear here once the federation issues them.
@@ -43,7 +53,7 @@ No certificates have been issued to this Player ID yet. They appear here once th
 @endif
 <div class="row gx-4 gy-5">
 <div class="col-lg-6">
-<div class="auth-card h-100">
+<div class="auth-card h-100" id="find-certificate">
 <h2 class="title-plain fs-3 mb-2">Find My Certificate</h2>
 <p class="mb-4">Enter your Player ID and date of birth. Both must match our records.</p>
 @if (session('lookup_failed'))
@@ -67,14 +77,14 @@ No certificates have been issued to this Player ID yet. They appear here once th
 <input @error('date_of_birth') aria-describedby="lookup-dob-error" aria-invalid="true" @enderror autocomplete="bday" @class(['form-control-jfi', 'is-invalid' => $errors->has('date_of_birth')]) id="lookup-dob" max="{{ today()->toDateString() }}" name="date_of_birth" required type="date"/>
 <x-form-error field="date_of_birth" id="lookup-dob"/>
 </div>
-<button class="jfi-btn jfi-btn-primary jfi-btn-block" type="submit"><i aria-hidden="true" class="fa-solid fa-magnifying-glass"></i> Find Certificates</button>
+<button class="jfi-btn jfi-btn-primary jfi-btn-block" data-busy-label="Searching..." type="submit"><i aria-hidden="true" class="fa-solid fa-magnifying-glass"></i> Find Certificates</button>
 </form>
 <p class="form-help mt-4 mb-0">Registered players can also download certificates after <a href="{{ route('frontend.players.login') }}">signing in</a>.</p>
 </div>
 </div>
 <div class="col-lg-6">
 <figure class="certificate-preview m-0">
-<img alt="Sample JFI certificate showing the player's name, Player ID, achievement, signatures and a QR code" height="1131" loading="lazy" src="{{ asset('assets/images/jfi/certificate-sample.webp') }}" width="1600"/>
+<img alt="Sample JFI certificate showing the player's name, Player ID, achievement, signatures and a QR code" height="1132" loading="lazy" src="{{ asset('assets/images/jfi/certificate-sample.webp') }}" width="1600"/>
 </figure>
 <p class="form-help mt-3">Sample certificate. Every certificate carries a certificate number and a QR code.</p>
 </div>
@@ -105,3 +115,7 @@ No certificates have been issued to this Player ID yet. They appear here once th
 </section>
 </div>
 @endsection
+
+@push('scripts')
+<script src="@versionedAsset('assets/js/jfi-forms.js')"></script>
+@endpush

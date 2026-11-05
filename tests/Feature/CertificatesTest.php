@@ -109,7 +109,7 @@ class CertificatesTest extends TestCase
         $certificate = $this->issue($player);
 
         $this->post(route('frontend.certificates.lookup'), ['player_id' => strtolower($player->registration_no), 'date_of_birth' => '2008-01-15'])
-            ->assertRedirect(route('frontend.certificates.index'));
+            ->assertRedirect(route('frontend.certificates.index').'#lookup-results');
 
         $this->followingRedirects()
             ->post(route('frontend.certificates.lookup'), ['player_id' => $player->registration_no, 'date_of_birth' => '2008-01-15'])
@@ -117,7 +117,8 @@ class CertificatesTest extends TestCase
             ->assertSee('Certificates for Aarav Sharma')
             ->assertSee($certificate->certificate_no)
             ->assertSee('/certificates/'.$certificate->id.'/download?expires=', false)
-            ->assertSee('signature=', false);
+            ->assertSee('signature=', false)
+            ->assertSee(route('frontend.certificates.verify', $certificate->verification_code), false);
     }
 
     public function test_lookup_gives_one_generic_message_for_any_wrong_combination(): void
@@ -132,6 +133,9 @@ class CertificatesTest extends TestCase
             ['player_id' => $pending->registration_no, 'date_of_birth' => '2008-01-15'],
         ];
 
+        $this->post(route('frontend.certificates.lookup'), $attempts[0])
+            ->assertRedirect(route('frontend.certificates.index').'#find-certificate');
+
         foreach ($attempts as $attempt) {
             $this->followingRedirects()
                 ->post(route('frontend.certificates.lookup'), $attempt)
@@ -144,6 +148,7 @@ class CertificatesTest extends TestCase
     public function test_lookup_requires_both_fields(): void
     {
         $this->post(route('frontend.certificates.lookup'), [])
+            ->assertRedirect(route('frontend.certificates.index').'#find-certificate')
             ->assertSessionHasErrors([
                 'player_id' => 'Enter your Player ID.',
                 'date_of_birth' => 'Enter your date of birth.',
