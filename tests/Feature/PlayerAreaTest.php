@@ -46,6 +46,45 @@ class PlayerAreaTest extends TestCase
         $this->assertAuthenticatedAs($player, 'player');
     }
 
+    public function test_sign_in_starts_a_new_session_and_can_remember_the_player(): void
+    {
+        $player = $this->player('Aarav Sharma');
+        $this->get(route('frontend.players.login'));
+        $before = session()->getId();
+
+        $this->post(route('frontend.players.login.store'), ['login' => $player->email, 'password' => 'secret-password', 'remember' => '1'])
+            ->assertRedirect(route('player.dashboard'))
+            ->assertCookie(auth('player')->getRecallerName());
+
+        $this->assertNotSame($before, session()->getId());
+        $this->assertNotNull($player->refresh()->getRememberToken());
+    }
+
+    public function test_sign_in_returns_to_the_page_the_player_asked_for(): void
+    {
+        $player = $this->player('Aarav Sharma');
+        $certificate = $this->issue($player);
+
+        $this->get(route('player.certificates.download', $certificate))->assertRedirect(route('frontend.players.login'));
+
+        $this->post(route('frontend.players.login.store'), ['login' => $player->email, 'password' => 'secret-password'])
+            ->assertRedirect(route('player.certificates.download', $certificate));
+    }
+
+    public function test_player_sees_only_their_own_photo(): void
+    {
+        Storage::disk('local')->put('player-photos/aarav.jpg', 'aarav-photo');
+        Storage::disk('local')->put('player-photos/priya.jpg', 'priya-photo');
+        $aarav = $this->player('Aarav Sharma');
+        $aarav->forceFill(['photo' => 'player-photos/aarav.jpg'])->saveQuietly();
+        $this->player('Priya Nair')->forceFill(['photo' => 'player-photos/priya.jpg'])->saveQuietly();
+
+        $this->get(route('player.photo'))->assertRedirect(route('frontend.players.login'));
+
+        $this->actingAs($aarav, 'player');
+        $this->assertSame('aarav-photo', $this->get(route('player.photo'))->assertOk()->streamedContent());
+    }
+
     public function test_wrong_password_gets_a_generic_message(): void
     {
         $player = $this->player('Aarav Sharma');
