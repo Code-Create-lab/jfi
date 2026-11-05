@@ -1,95 +1,130 @@
 /**
- * Hero slideshow. Images are read from the JSON array in the
- * data-slides attribute of #banner-slideshow, so photography can be
- * swapped from the Blade view without touching this file. With no
- * images the hero falls back to the brand backdrop defined in CSS.
+ * Home hero banner slider. The slides are rendered in the Blade view, so the
+ * first banner shows without JavaScript; this script only cross-fades between
+ * them. Autoplay stops while the pointer or keyboard focus is on the slider,
+ * while the tab is hidden, and entirely for visitors who prefer reduced motion.
  */
-function initBannerSlideshow() {
-    var slides = $('#banner-slideshow').data('slides') || [];
+(function () {
+    var slider = document.querySelector('[data-hero-slider]');
 
-    if (!slides.length) {
+    if (!slider) {
         return;
     }
 
-    var currentSlide = 0;
-    var isTransitioning = false;
-    var $container = $('.slideshow-container');
-    var $slideElements = [];
+    var slides = slider.querySelectorAll('.hero-slide');
 
-    function createSlides() {
-        $.each(slides, function(index, imageSrc) {
-            var $slideDiv = $('<div></div>').addClass('slide').css('background-image', 'url(' + imageSrc + ')');
-            if (index === 0) {
-                $slideDiv.addClass('active');
+    if (slides.length < 2) {
+        return;
+    }
+
+    var dots = slider.querySelectorAll('[data-hero-dot]');
+    var prevButton = slider.querySelector('[data-hero-prev]');
+    var nextButton = slider.querySelector('[data-hero-next]');
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var interval = 6000;
+    var current = 0;
+    var timer = null;
+    var isHovered = false;
+    var hasFocus = false;
+
+    function show(index) {
+        current = (index + slides.length) % slides.length;
+
+        Array.prototype.forEach.call(slides, function (slide, slideIndex) {
+            var isActive = slideIndex === current;
+
+            slide.classList.toggle('is-active', isActive);
+            slide.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+
+            Array.prototype.forEach.call(slide.querySelectorAll('a'), function (link) {
+                if (isActive) {
+                    link.removeAttribute('tabindex');
+                } else {
+                    link.setAttribute('tabindex', '-1');
+                }
+            });
+        });
+
+        Array.prototype.forEach.call(dots, function (dot, dotIndex) {
+            if (dotIndex === current) {
+                dot.setAttribute('aria-current', 'true');
             } else {
-                $slideDiv.addClass('preparing');
+                dot.removeAttribute('aria-current');
             }
-            $container.append($slideDiv);
-            $slideElements.push($slideDiv);
-
-            $slideDiv.on('transitionend webkitTransitionEnd oTransitionEnd', function(e) {
-                onTransitionEnd(e, $slideDiv);
-            });
         });
     }
 
-    function onTransitionEnd(event, $currentDiv) {
-        if (slides.length > 1 && $currentDiv.hasClass('active') && !isTransitioning) {
-            nextSlide();
+    function stop() {
+        window.clearInterval(timer);
+        timer = null;
+    }
+
+    function start() {
+        stop();
+
+        if (reduceMotion || isHovered || hasFocus || document.hidden) {
+            return;
         }
+
+        timer = window.setInterval(function () {
+            show(current + 1);
+        }, interval);
     }
 
-    function nextSlide() {
-        if (isTransitioning) return;
-        isTransitioning = true;
-
-        var $curr = $slideElements[currentSlide];
-        var nextIndex = (currentSlide + 1) % slides.length;
-        var $next = $slideElements[nextIndex];
-
-        $next.removeClass('preparing fade-out').addClass('active').css('z-index', 3);
-        $curr.css('z-index', 2);
-
-        setTimeout(function() {
-            $curr.css({
-                'opacity': '0',
-                'transform': 'scale(1.1)'
-            });
-        }, 1000);
-
-        setTimeout(function() {
-            $curr.removeClass('active').addClass('preparing').css({
-                'opacity': '',
-                'transform': ''
-            });
-            currentSlide = nextIndex;
-            isTransitioning = false;
-        }, 1800);
+    function goTo(index) {
+        show(index);
+        start();
     }
 
-    function startSlideshow() {
-        setInterval(function() {
-            if (!isTransitioning) {
-                nextSlide();
-            }
-        }, 6000);
-    }
-
-    function preloadImages(imageArray) {
-        $.each(imageArray, function(i, src) {
-            var img = new Image();
-            img.src = src;
+    if (prevButton) {
+        prevButton.addEventListener('click', function () {
+            goTo(current - 1);
         });
     }
 
-    createSlides();
-    preloadImages(slides);
-
-    if (slides.length > 1) {
-        startSlideshow();
+    if (nextButton) {
+        nextButton.addEventListener('click', function () {
+            goTo(current + 1);
+        });
     }
-}
 
-$(document).ready(function() {
-    initBannerSlideshow();
-});
+    Array.prototype.forEach.call(dots, function (dot) {
+        dot.addEventListener('click', function () {
+            goTo(parseInt(dot.getAttribute('data-hero-dot'), 10));
+        });
+    });
+
+    slider.addEventListener('keydown', function (event) {
+        if (event.key === 'ArrowLeft') {
+            goTo(current - 1);
+        } else if (event.key === 'ArrowRight') {
+            goTo(current + 1);
+        }
+    });
+
+    slider.addEventListener('mouseenter', function () {
+        isHovered = true;
+        stop();
+    });
+
+    slider.addEventListener('mouseleave', function () {
+        isHovered = false;
+        start();
+    });
+
+    slider.addEventListener('focusin', function () {
+        hasFocus = true;
+        stop();
+    });
+
+    slider.addEventListener('focusout', function (event) {
+        if (!slider.contains(event.relatedTarget)) {
+            hasFocus = false;
+            start();
+        }
+    });
+
+    document.addEventListener('visibilitychange', start);
+
+    start();
+})();

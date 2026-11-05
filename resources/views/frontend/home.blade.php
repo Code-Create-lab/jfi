@@ -5,10 +5,14 @@
 
 @php
     $highlightGallery = $galleries->first();
-    // Built-in photos until the federation adds banners in /admin/banners.
-    $slides = $banners->isNotEmpty()
-        ? $banners->map(fn ($banner): string => Str::startsWith($banner->image, 'assets/') ? asset($banner->image) : Storage::url($banner->image))->values()
-        : collect(config('jumpball.fallback_banners'))->map(fn (string $path): string => asset($path))->values();
+    // Banners from /admin/banners are often designed artwork with their own
+    // text, so the hero shows them whole, beside the headline, never under it.
+    $heroSlides = $banners->map(fn ($banner): array => [
+        'src' => Str::startsWith($banner->image, 'assets/') ? asset($banner->image) : Storage::url($banner->image),
+        'alt' => $banner->title,
+        'url' => $banner->button_url,
+        'button' => $banner->button_text,
+    ])->values();
     $img = fn (string $file): string => asset('assets/images/'.$file);
 
     $quickLinks = [
@@ -34,18 +38,14 @@
 
 @section('content')
 <div class="section-wrapper pb-0">
-<div class="banner-home-container" data-slides="{{ $slides->toJson() }}" id="banner-slideshow">
-<div class="slideshow-container"></div>
+<section aria-labelledby="hero-title" class="banner-home-container hero-home">
 <div class="hero-container">
-<div class="banner-content-container">
-<div class="banner-home-top">
-<div class="banner-home-title animate-box animate__animated" data-animate="animate__fadeInLeft">
-<div>
+<div class="hero-grid">
+<div class="hero-copy animate-box animate__animated" data-animate="animate__fadeInUp">
 <div class="sub-heading sub-heading-banner">
 <span class="sub-heading-title">Jumpball Federation of India</span>
 </div>
-</div>
-<h1 class="secondary-accent">Raising the Game <span class="hero-highlight">Across India</span></h1>
+<h1 class="secondary-accent" id="hero-title">Raising the Game <span class="hero-highlight">Across India</span></h1>
 <p class="hero-lede">The national body for Jumpball. Register players, recognize state associations, run national championships and publish official results and certificates.</p>
 <div class="hero-actions">
 <a class="btn btn-accent" href="{{ route('frontend.players.register') }}">
@@ -55,29 +55,54 @@
 <a class="btn-outline-light-jfi" href="{{ route('frontend.certificates.index') }}">Verify a Certificate</a>
 </div>
 </div>
-@if ($nextEvent)
-<div class="banner-home-network animate-box animate__animated" data-animate="animate__fadeInRight">
-<div class="hero-panel">
-<span class="hero-panel-label">Next on the Calendar</span>
-<h2 class="hero-panel-title"><a href="{{ route('frontend.events.show', $nextEvent->slug) }}">{{ $nextEvent->title }}</a></h2>
-@if ($nextEvent->summary)
-<p>{{ $nextEvent->summary }}</p>
+<div class="hero-media">
+@if ($heroSlides->isNotEmpty())
+<div aria-label="Featured banners" aria-roledescription="carousel" class="hero-slider" data-hero-slider role="region">
+<div class="hero-slider-frame">
+@foreach ($heroSlides as $slide)
+<div @class(['hero-slide', 'is-active' => $loop->first]) aria-hidden="{{ $loop->first ? 'false' : 'true' }}" aria-label="{{ $loop->iteration }} of {{ $loop->count }}" aria-roledescription="slide" role="group">
+@if ($slide['url'])
+<a href="{{ $slide['url'] }}" @if (! $loop->first) tabindex="-1" @endif>
 @endif
-<div class="hero-panel-meta">
-<span><i aria-hidden="true" class="fa-regular fa-calendar"></i>{{ $nextEvent->dateRange() }}</span>
-<span><i aria-hidden="true" class="fa-solid fa-location-dot"></i>{{ collect([$nextEvent->city, $nextEvent->state])->filter()->join(', ') ?: 'Venue to be announced' }}</span>
-<span><i aria-hidden="true" class="fa-solid fa-users"></i>Entries through state associations</span>
-</div>
-<a class="link-wrapper" href="{{ route('frontend.events.show', $nextEvent->slug) }}">
-<span>Event details</span>
-<i aria-hidden="true" class="fa-solid fa-arrow-right"></i>
+<img alt="{{ $slide['alt'] }}" decoding="async" @if ($loop->first) fetchpriority="high" @else loading="lazy" @endif src="{{ $slide['src'] }}"/>
+@if ($slide['url'])
+@if ($slide['button'])
+<span class="visually-hidden">{{ $slide['button'] }}</span>
+@endif
 </a>
+@endif
+</div>
+@endforeach
+</div>
+@if ($heroSlides->count() > 1)
+<div class="hero-slider-controls">
+<div class="hero-slider-dots">
+@foreach ($heroSlides as $slide)
+<button @if ($loop->first) aria-current="true" @endif aria-label="Show banner {{ $loop->iteration }} of {{ $loop->count }}" class="hero-slider-dot" data-hero-dot="{{ $loop->index }}" type="button"></button>
+@endforeach
+</div>
+<div class="hero-slider-arrows">
+<button aria-label="Previous banner" class="hero-slider-arrow" data-hero-prev type="button"><i aria-hidden="true" class="fa-solid fa-arrow-left"></i></button>
+<button aria-label="Next banner" class="hero-slider-arrow" data-hero-next type="button"><i aria-hidden="true" class="fa-solid fa-arrow-right"></i></button>
 </div>
 </div>
 @endif
 </div>
-<div class="banner-home-bottom animate-box animate__animated animated-delay-slow" data-animate="animate__fadeInUp">
-<div class="hero-facts">
+@else
+<div aria-hidden="true" class="hero-media-plate">
+<img alt="" height="68" src="{{ asset('assets/images/jfi-logo.png') }}" width="91"/>
+</div>
+@endif
+</div>
+</div>
+<div @class(['hero-facts animate-box animate__animated animated-delay-slow', 'has-event' => $nextEvent]) data-animate="animate__fadeInUp">
+@if ($nextEvent)
+<a class="hero-fact hero-fact-event" href="{{ route('frontend.events.show', $nextEvent->slug) }}">
+<span class="hero-fact-kicker">Next on the calendar</span>
+<span class="hero-fact-title">{{ $nextEvent->title }}</span>
+<span class="hero-fact-meta">{{ $nextEvent->dateRange() }} &middot; {{ collect([$nextEvent->city, $nextEvent->state])->filter()->join(', ') ?: 'Venue to be announced' }}</span>
+</a>
+@endif
 <div class="hero-fact">
 <span class="hero-fact-value">Player ID</span>
 <span class="hero-fact-label">Official registration for every athlete</span>
@@ -92,9 +117,7 @@
 </div>
 </div>
 </div>
-</div>
-</div>
-</div>
+</section>
 </div>
 
 @if ($announcements->isNotEmpty())

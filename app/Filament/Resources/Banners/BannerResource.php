@@ -53,20 +53,23 @@ class BannerResource extends Resource
                             ->directory('banners')
                             ->visibility('public')
                             ->maxSize(5120)
-                            ->helperText('Wide photo, at least 1600 px wide. JPG, PNG or WebP up to 5 MB.')
+                            ->helperText('Shown whole at 16:9 beside the home page headline, with no text on top, so lettering designed into the image stays readable. Best at 1920 × 1080 px. JPG, PNG or WebP up to 5 MB.')
                             ->columnSpanFull(),
                         TextInput::make('title')
                             ->required()
                             ->maxLength(255)
-                            ->helperText('Used as the image description; the slideshow shows the photo only.'),
+                            ->helperText('Describes the image for screen readers and search engines. Not shown on the page.'),
                         TextInput::make('subtitle')
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->helperText('Internal note for the admin list. Not shown on the page.'),
                         TextInput::make('button_text')
-                            ->maxLength(50),
+                            ->maxLength(50)
+                            ->helperText('Optional. Read out with the link for screen readers.'),
                         TextInput::make('button_url')
                             ->label('Button link')
                             ->maxLength(255)
                             ->placeholder('/players/register or https://...')
+                            ->helperText('Optional. Makes the whole banner clickable.')
                             ->regex('#^(/|https?://)#')
                             ->validationMessages(['regex' => 'Start with / for a page on this site, or with https://.']),
                         Toggle::make('is_published')

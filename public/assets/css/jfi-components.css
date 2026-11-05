@@ -2141,23 +2141,6 @@ input[type="file"].form-control-jfi::file-selector-button{
 
 /* 21. Page-specific details */
 
-.hero-panel-title{
-    margin: 10px 0 6px;
-    font-family: var(--font-family-1);
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1.3;
-    text-transform: none;
-}
-
-.hero-panel-title a{
-    color: #FFFFFF;
-}
-
-.hero-panel-title a:hover{
-    color: var(--jfi-gold);
-}
-
 .teaser-card-media .teaser-logo{
     padding: 18px;
     background-color: var(--jfi-surface);

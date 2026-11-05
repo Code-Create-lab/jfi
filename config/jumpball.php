@@ -99,24 +99,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Home Slideshow Fallback
-    |--------------------------------------------------------------------------
-    |
-    | Used on the home page only while no banner is published in
-    | /admin/banners. Placeholder template photos until the federation
-    | supplies its own.
-    |
-    */
-
-    'fallback_banners' => [
-        'assets/images/multiracial-group-of-athletes-going-for-an-outdoor-ZAZBUZY-1024x683.jpg',
-        'assets/images/happy-athletic-women-having-fun-while-celebrating-E2UZM9M.jpg',
-        'assets/images/mixed-adult-couple-palying-padel-on-outdoor-court-TT64K26.jpg',
-        'assets/images/happy-sportswomen-giving-high-five-after-playing-p-D8ZSZV5.jpg',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Inner Page Banner Photos
     |--------------------------------------------------------------------------
     |
