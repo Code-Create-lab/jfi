@@ -35,7 +35,7 @@ The federation office is updating this list.
 <span class="jfi-badge">{{ $group->first()->stateAssociation->state }}</span>
 @endif
 </div>
-<div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-4">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5 g-4">
 @foreach ($group as $bearer)
 <div class="col"><x-person-card :person="$bearer"/></div>
 @endforeach
@@ -43,7 +43,7 @@ The federation office is updating this list.
 </section>
 @endforeach
 @else
-<div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4">
 @foreach ($bearers as $bearer)
 <div class="col"><x-person-card :person="$bearer"/></div>
 @endforeach

@@ -44,6 +44,19 @@ class OfficeBearersTest extends TestCase
             ->assertDontSee('Rupesh Utam');
     }
 
+    public function test_home_lists_every_national_bearer(): void
+    {
+        $names = ['Asha Menon', 'Vikram Rao', 'Kiran Das', 'Meera Pillai', 'Arjun Singh'];
+
+        foreach ($names as $index => $name) {
+            OfficeBearer::query()->create(['level' => BearerLevel::National, 'name' => $name, 'designation' => 'Vice President', 'sort_order' => $index + 1]);
+        }
+
+        $this->get(route('frontend.home'))
+            ->assertOk()
+            ->assertSeeInOrder($names);
+    }
+
     public function test_unpublished_and_state_bearers_are_not_listed_nationally(): void
     {
         $association = StateAssociation::query()->create(['name' => 'Kerala Jumpball Association', 'state' => 'Kerala', 'email' => 'k@example.com', 'phone' => '9800000000']);
