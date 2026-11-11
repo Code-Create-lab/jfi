@@ -2771,3 +2771,244 @@ footer .social-links a{
     border: 0;
     border-radius: var(--radius-md);
 }
+
+/* ---------- Page loader (partials/loader.blade.php) ---------- */
+html.is-loading,
+html.is-loading body{
+    overflow: hidden;
+}
+
+.page-loader{
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background-color: var(--jfi-navy-900);
+    color: #FFFFFF;
+    transition: opacity 420ms cubic-bezier(.4, 0, .2, 1), visibility 0s linear 420ms;
+}
+
+.page-loader.is-done{
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Championship photo under a navy wash, so the ring and crest stay legible */
+.page-loader-bg{
+    position: absolute;
+    inset: 0;
+}
+
+.page-loader-bg img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.page-loader-bg::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(55% 50% at 50% 45%, rgba(20, 64, 168, .35), rgba(20, 64, 168, 0) 70%),
+        linear-gradient(180deg, rgba(6, 21, 56, .78) 0%, rgba(6, 21, 56, .9) 100%);
+}
+
+/* Court centre lines behind the dial */
+.page-loader::before,
+.page-loader::after{
+    content: "";
+    position: absolute;
+    z-index: 1;
+}
+
+.page-loader::before{
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .14) 20%, rgba(255, 255, 255, .14) 80%, transparent);
+}
+
+.page-loader::after{
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, rgba(255, 255, 255, .1) 25%, rgba(255, 255, 255, .1) 75%, transparent);
+}
+
+.page-loader-stack{
+    position: relative;
+    z-index: 2;
+    display: grid;
+    justify-items: center;
+    gap: 28px;
+    padding: 16px;
+}
+
+.page-loader-dial{
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: clamp(168px, 38vw, 224px);
+    aspect-ratio: 1;
+    animation: page-loader-in 640ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.page-loader-ring{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    transform: rotate(-90deg);
+}
+
+.page-loader-track{
+    fill: none;
+    stroke: rgba(255, 255, 255, .16);
+    stroke-width: 3;
+}
+
+.page-loader-bar{
+    fill: none;
+    stroke: var(--jfi-gold);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 301.6;
+    stroke-dashoffset: 301.6;
+    filter: drop-shadow(0 0 6px rgba(226, 174, 43, .5));
+}
+
+/* Idle sweep so the ring never looks frozen on a slow connection */
+.page-loader-sweep{
+    fill: none;
+    stroke: rgba(255, 255, 255, .55);
+    stroke-width: 1.25;
+    stroke-dasharray: 18 283.6;
+    transform-origin: 50% 50%;
+    animation: page-loader-spin 1.6s linear infinite;
+}
+
+.page-loader-disc{
+    display: grid;
+    place-items: center;
+    width: 80%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 38%, #FFFFFF, #EEF2FA 72%);
+    box-shadow: 0 0 0 6px rgba(6, 21, 56, .85), 0 18px 40px rgba(0, 0, 0, .45);
+}
+
+.page-loader-disc img{
+    display: block;
+    width: 74%;
+    height: auto;
+    animation: page-loader-bob 2.4s cubic-bezier(.45, 0, .55, 1) infinite;
+}
+
+.page-loader-meta{
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    font-family: var(--font-family-1);
+    font-variant-numeric: tabular-nums;
+    text-transform: uppercase;
+    animation: page-loader-in 640ms 120ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.page-loader-name{
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .22em;
+    color: rgba(255, 255, 255, .8);
+    text-align: center;
+}
+
+.page-loader-status{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    color: #FFFFFF;
+}
+
+.page-loader-live{
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--jfi-gold);
+    animation: page-loader-pulse 1.2s ease-in-out infinite;
+}
+
+.page-loader-percent{
+    min-width: 4ch;
+    color: var(--jfi-gold-light);
+    text-align: right;
+}
+
+.page-loader.is-done .page-loader-dial{
+    transform: scale(1.06);
+    transition: transform 420ms cubic-bezier(.22, 1, .36, 1);
+}
+
+@keyframes page-loader-in{
+    from{
+        opacity: 0;
+        transform: translateY(8px) scale(.96);
+    }
+
+    to{
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes page-loader-spin{
+    to{
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes page-loader-bob{
+    0%,
+    100%{
+        transform: translateY(0);
+    }
+
+    50%{
+        transform: translateY(-4px);
+    }
+}
+
+@keyframes page-loader-pulse{
+    0%,
+    100%{
+        opacity: 1;
+    }
+
+    50%{
+        opacity: .3;
+    }
+}
+
+@media (prefers-reduced-motion: reduce){
+    .page-loader-sweep,
+    .page-loader-disc img,
+    .page-loader-live,
+    .page-loader-dial,
+    .page-loader-meta{
+        animation: none;
+    }
+
+    .page-loader.is-done .page-loader-dial{
+        transform: none;
+    }
+}
