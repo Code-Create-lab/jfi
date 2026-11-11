@@ -178,7 +178,8 @@
 
 {{-- National office bearers --}}
 @if ($nationalBearers->isNotEmpty())
-<section aria-labelledby="bearers-title" class="section pt-0">
+<div class="section-wrapper py-0">
+<section aria-labelledby="bearers-title" class="page-band page-band-court">
 <div class="hero-container">
 <div class="section-heading-row">
 <x-section-heading id="bearers-title" label="Office Bearers" lede="The national office bearers accountable for the rule book, the championship calendar and the player registry." title="Who Runs the Federation"/>
@@ -191,6 +192,7 @@
 </div>
 </div>
 </section>
+</div>
 @endif
 
 {{-- About the federation, with counters --}}

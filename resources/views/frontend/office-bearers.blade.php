@@ -13,7 +13,8 @@
 @section('content')
 <x-page-banner :crumbs="['About' => route('frontend.about.federation')]" :subtitle="$isState ? 'Office bearers of each recognized state association.' : 'The elected office bearers who lead the federation.'" :title="$title"/>
 
-<section class="page-section">
+<div class="section-wrapper">
+<section class="page-band page-band-court">
 <div class="hero-container">
 <nav aria-label="Office bearer level">
 <ul class="jfi-tabs">
@@ -51,4 +52,5 @@ The federation office is updating this list.
 @endif
 </div>
 </section>
+</div>
 @endsection

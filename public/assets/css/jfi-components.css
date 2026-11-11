@@ -10,6 +10,7 @@ visible focus, 44px+ touch targets, labelled form fields, no emoji icons,
 
 :root{
     --jfi-court-lines: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 940 520' fill='none' stroke='%23FFFFFF' stroke-opacity='.09' stroke-width='2'%3E%3Crect x='20' y='20' width='900' height='480'/%3E%3Cpath d='M470 20v480'/%3E%3Ccircle cx='470' cy='260' r='78'/%3E%3Cpath d='M20 140h120v240H20M920 140H800v240h120'/%3E%3Cpath d='M140 190a70 70 0 0 1 0 140M800 190a70 70 0 0 0 0 140'/%3E%3Cpath d='M20 70a190 190 0 0 1 0 380M920 70a190 190 0 0 0 0 380'/%3E%3C/svg%3E");
+    --jfi-court-lines-navy: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 940 520' fill='none' stroke='%230A2463' stroke-opacity='.07' stroke-width='2'%3E%3Crect x='20' y='20' width='900' height='480'/%3E%3Cpath d='M470 20v480'/%3E%3Ccircle cx='470' cy='260' r='78'/%3E%3Cpath d='M20 140h120v240H20M920 140H800v240h120'/%3E%3Cpath d='M140 190a70 70 0 0 1 0 140M800 190a70 70 0 0 0 0 140'/%3E%3Cpath d='M20 70a190 190 0 0 1 0 380M920 70a190 190 0 0 0 0 380'/%3E%3C/svg%3E");
     --jfi-success: #0E6B2A;
     --jfi-success-bg: #E3F4E8;
     --jfi-danger: #A61B1B;
@@ -81,6 +82,19 @@ main h4 a{
     padding: 88px 20px;
     border-radius: var(--radius-lg);
     background-color: var(--jfi-surface);
+}
+
+/* Brand-blue band with faint court markings, for the office bearers */
+.page-band-court{
+    background-color: var(--jfi-blue-soft);
+    background-image: var(--jfi-court-lines-navy);
+    background-repeat: no-repeat;
+    background-position: right -120px center;
+    background-size: auto 140%;
+}
+
+.page-band-court .jfi-badge{
+    background-color: #FFFFFF;
 }
 
 .section-heading{
@@ -640,6 +654,44 @@ main h4 a{
     margin: 4px 0 0;
     font-size: 15px;
     color: var(--jfi-slate);
+}
+
+/* Office bearer card: portrait over a navy caption with a gold rule,
+   matching the founder card on the home page. */
+.person-card-navy{
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(10, 36, 99, .12);
+    border-radius: var(--radius-lg);
+    background-color: var(--jfi-navy);
+    box-shadow: 0 18px 40px -22px rgba(6, 21, 56, .55);
+}
+
+.person-card-navy .person-card-photo{
+    border-radius: 0;
+}
+
+.person-card-navy .person-card-body{
+    flex: 1;
+    padding: 18px 22px 20px;
+    border-top: 4px solid var(--jfi-gold);
+}
+
+.person-card-navy .person-card-role{
+    color: var(--jfi-gold-light);
+}
+
+.person-card-navy .person-card-name{
+    color: #FFFFFF;
+}
+
+.person-card-navy .person-card-org{
+    color: rgba(255, 255, 255, .78);
+}
+
+.person-card-navy .person-card-org i{
+    color: var(--jfi-gold);
 }
 
 /* Association cards */
@@ -2349,6 +2401,11 @@ input[type="file"].form-control-jfi::file-selector-button{
     .page-banner{
         padding: 130px 16px 48px;
         background-position: center, right -260px center;
+    }
+
+    /* On a tall single-column band the markings only cross the cards as stripes */
+    .page-band-court{
+        background-image: none;
     }
 
     .page-banner-title{

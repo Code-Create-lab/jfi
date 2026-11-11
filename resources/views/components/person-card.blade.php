@@ -8,7 +8,7 @@
     };
 @endphp
 
-<article class="person-card animate-box animate__animated" data-animate="animate__fadeInUp">
+<article class="person-card person-card-navy animate-box animate__animated" data-animate="animate__fadeInUp">
 <div class="person-card-photo">
 <img alt="{{ $person->photo ? 'Photo of '.$person->name : '' }}" height="480" loading="lazy" src="{{ $photoUrl }}" width="400"/>
 </div>
