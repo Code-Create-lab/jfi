@@ -1,6 +1,8 @@
 {{-- Full-screen loading screen, shown until the page's images and fonts are in.
      The ring tracks real progress (non-lazy images, fonts, DOM ready) and holds at
-     92% until window load. It never stays longer than 12 seconds, and without
+     92% until window load. The ring fills over at least 3 seconds, then holds
+     and fades, so the screen shows for about 3.5 to 4 seconds as the client
+     asked. It never stays longer than 12 seconds. Without
      JavaScript it is hidden by the noscript rule below. Styles: jfi-components.css. --}}
 <div aria-busy="true" aria-label="Loading {{ $site['name'] }}" aria-live="polite" class="page-loader" id="page-loader" role="status">
 <div aria-hidden="true" class="page-loader-bg">
@@ -38,7 +40,7 @@
     var bar = loader.querySelector('.page-loader-bar');
     var percent = loader.querySelector('[data-loader-percent]');
     var CIRCUMFERENCE = 301.6;
-    var MIN_SHOW = 700;
+    var MIN_SHOW = 3000;
     var MAX_WAIT = 12000;
     var start = Date.now();
     var shown = 0;
@@ -48,11 +50,15 @@
     var finished = false;
 
     // Ease the shown value toward the target so jumps read as motion, not snaps.
+    // The ring is also paced by time, so it fills steadily across MIN_SHOW
+    // rather than racing to 92% and sitting there.
     function paint() {
-        shown += (target - shown) * 0.12;
+        var paced = Math.min(target, ((Date.now() - start) / MIN_SHOW) * 100);
 
-        if (target - shown < 0.4) {
-            shown = target;
+        shown += (paced - shown) * 0.12;
+
+        if (paced - shown < 0.4) {
+            shown = paced;
         }
 
         bar.style.strokeDashoffset = CIRCUMFERENCE * (1 - shown / 100);
