@@ -7,7 +7,7 @@
 <section class="page-banner error-banner" aria-labelledby="error-title">
 <div class="hero-container">
 <a class="error-logo" href="{{ route('frontend.home') }}">
-<img alt="Jumpball Federation of India - home" height="72" src="{{ asset('assets/images/jfi-logo.png') }}" width="97"/>
+<img alt="Jumpball Federation of India - home" height="96" src="{{ asset('assets/images/jfi-logo.png') }}" width="120"/>
 </a>
 <p class="error-code" aria-hidden="true">404</p>
 <h1 class="page-banner-title" id="error-title">Page Not Found</h1>

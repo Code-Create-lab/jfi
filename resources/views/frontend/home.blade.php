@@ -90,7 +90,7 @@
 </div>
 @else
 <div aria-hidden="true" class="hero-media-plate">
-<img alt="" height="68" src="{{ asset('assets/images/jfi-logo.png') }}" width="91"/>
+<img alt="" height="68" src="{{ asset('assets/images/jfi-logo.png') }}" width="85"/>
 </div>
 @endif
 </div>

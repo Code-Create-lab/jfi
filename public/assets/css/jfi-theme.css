@@ -386,10 +386,14 @@ textarea:focus-visible{
     padding: 28px 40px 0 40px;
 }
 
+/* The bar and the crest plate hanging from it share one drop shadow,
+   so they read as a single shape. */
 .navbar{
+    --jfi-bar-height: 84px;
+    --jfi-crest-height: 114px;
     background-color: #FFFFFF;
     border-radius: var(--radius-md);
-    box-shadow: 0 10px 30px -12px rgba(6, 21, 56, .35);
+    filter: drop-shadow(0 10px 12px rgba(6, 21, 56, .3));
 }
 
 .navbar::before{
@@ -397,17 +401,55 @@ textarea:focus-visible{
 }
 
 .navbar-nav-container{
-    padding: 10px 14px 10px 22px;
+    min-height: var(--jfi-bar-height);
+    padding: 0 14px 0 24px;
 }
 
+/* Federation crest, shown large on a white plate that hangs below the bar,
+   so the full mark stays legible without making the bar itself taller. */
 .navbar .logo-container{
     width: auto;
+    height: var(--jfi-bar-height);
     flex: 0 0 auto;
+    align-self: flex-start;
+    justify-content: flex-start;
+}
+
+.navbar .navbar-brand{
+    position: relative;
+    display: block;
+    margin: 0;
+    padding: 14px 18px 16px;
+    background-color: #FFFFFF;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    box-shadow: inset 0 -3px 0 var(--jfi-gold);
+}
+
+/* Concave corners where the plate meets the bottom of the bar */
+.navbar .navbar-brand::before,
+.navbar .navbar-brand::after{
+    content: "";
+    position: absolute;
+    top: var(--jfi-bar-height);
+    width: var(--radius-md);
+    height: var(--radius-md);
+    pointer-events: none;
+}
+
+.navbar .navbar-brand::before{
+    right: 100%;
+    background: radial-gradient(circle at 0 100%, transparent calc(var(--radius-md) - .5px), #FFFFFF var(--radius-md));
+}
+
+.navbar .navbar-brand::after{
+    left: 100%;
+    background: radial-gradient(circle at 100% 100%, transparent calc(var(--radius-md) - .5px), #FFFFFF var(--radius-md));
 }
 
 .navbar .logo-container img{
+    display: block;
     width: auto;
-    height: 68px;
+    height: var(--jfi-crest-height);
     max-width: none;
 }
 
@@ -492,7 +534,7 @@ textarea:focus-visible{
 
 .sidebar-header .logo img,
 .sidebar-header img.logo{
-    height: 56px;
+    height: 74px;
     width: auto;
 }
 
@@ -510,7 +552,7 @@ textarea:focus-visible{
 /* Banners are shown whole beside the headline (never under it), because the
    federation's banners are designed artwork with their own lettering. */
 .hero-home{
-    padding: 150px 40px 48px;
+    padding: 190px 40px 48px;
     background-color: var(--jfi-navy-900);
     background-image:
         radial-gradient(ellipse 60% 70% at 85% 30%, rgba(20, 64, 168, .55) 0%, rgba(20, 64, 168, 0) 70%),
@@ -873,14 +915,15 @@ footer .bg-accent-color::before{
 .footer-logo-container{
     background-color: #FFFFFF;
     border-radius: var(--radius-md);
-    padding: 14px 18px;
+    padding: 18px 22px 19px;
     display: inline-flex;
     align-self: flex-start;
+    box-shadow: inset 0 -3px 0 var(--jfi-gold);
 }
 
 .footer-logo-container img{
     width: auto;
-    height: 84px;
+    height: 114px;
 }
 
 .footer-content-container{
@@ -983,13 +1026,71 @@ footer .chevron-list a:hover{
 
 /* 13. Responsive */
 
+/* Narrow desktops: tighter link spacing leaves room for the full-size crest */
+@media (max-width: 1299.98px){
+    .nav-link{
+        padding: 10px 11px !important;
+    }
+
+    .nav-link::after{
+        left: 11px;
+        right: 11px;
+    }
+}
+
 @media (max-width: 1199.98px){
     .navbar-container{
         padding: 24px 24px 0 24px;
     }
 
-    .navbar .logo-container img{
-        height: 54px;
+    /* Collapsed header: the crest sits inside the bar, beside the menu button */
+    .navbar{
+        --jfi-crest-height: 74px;
+        filter: none;
+        box-shadow: 0 10px 30px -12px rgba(6, 21, 56, .35);
+    }
+
+    .navbar-nav-container{
+        min-height: 0;
+        padding: 10px 12px 10px 18px;
+    }
+
+    .navbar .logo-container{
+        height: auto;
+        align-self: center;
+    }
+
+    .navbar .navbar-brand{
+        padding: 0;
+        background-color: transparent;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .navbar .navbar-brand::before,
+    .navbar .navbar-brand::after{
+        display: none;
+    }
+
+    /* Bootstrap collapses the links below 1200px, but the template only showed
+       the menu button from 1025px down, which left 1026-1199px with no menu. */
+    .navbar .nav-link-container,
+    .navbar .navbar-cta-container{
+        display: none;
+    }
+
+    .nav-btn{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        font-size: 20px;
+    }
+
+    .hero-home{
+        padding-top: 150px;
     }
 
     h1{
@@ -1060,12 +1161,16 @@ footer .chevron-list a:hover{
         justify-content: center;
     }
 
-    .navbar .logo-container{
-        width: auto;
+    .navbar{
+        --jfi-crest-height: 66px;
     }
 
-    .navbar .logo-container img{
-        height: 46px;
+    .navbar-nav-container{
+        padding: 8px 10px 8px 14px;
+    }
+
+    .navbar .logo-container{
+        width: auto;
     }
 
     h1,
@@ -1082,7 +1187,7 @@ footer .chevron-list a:hover{
     }
 
     .hero-home{
-        padding: 104px 16px 24px;
+        padding: 112px 16px 24px;
     }
 
     .hero-grid{
@@ -1130,7 +1235,7 @@ footer .chevron-list a:hover{
     }
 
     .footer-logo-container img{
-        height: 70px;
+        height: 98px;
     }
 }
 

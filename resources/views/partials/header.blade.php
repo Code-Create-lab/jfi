@@ -5,7 +5,7 @@
 <div class="navbar-nav-container">
 <div class="logo-container">
 <a class="navbar-brand" href="{{ route('frontend.home') }}">
-<img alt="Jumpball Federation of India - home" class="img-fluid" height="68" src="{{ asset('assets/images/jfi-logo.png') }}" width="91"/>
+<img alt="Jumpball Federation of India - home" class="img-fluid" height="114" src="{{ asset('assets/images/jfi-logo.png') }}" width="142"/>
 </a>
 </div>
 <div class="nav-link-container">
