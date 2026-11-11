@@ -29,7 +29,9 @@
     @stack('styles')
 </head>
 <body>
+@if (request()->routeIs('frontend.home'))
 @include('partials.loader')
+@endif
 <a class="skip-link" href="#main-content">Skip to main content</a>
 @include('partials.header')
 @include('partials.sidebar')

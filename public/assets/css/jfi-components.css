@@ -2891,11 +2891,6 @@ html.is-loading body{
     transition: opacity 420ms cubic-bezier(.4, 0, .2, 1), visibility 0s linear 420ms;
 }
 
-/* Already shown earlier in this visit */
-.loader-seen .page-loader{
-    display: none;
-}
-
 .page-loader.is-done{
     opacity: 0;
     visibility: hidden;

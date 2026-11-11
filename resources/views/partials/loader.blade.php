@@ -5,14 +5,7 @@
      asked. It never stays longer than 12 seconds. Without
      JavaScript it is hidden by the noscript rule below. Styles: jfi-components.css.
 
-     It only plays on the first page of a visit. A session cookie (cleared when the
-     browser closes) marks it as seen, and the check below runs before the markup
-     so later pages never flash it. --}}
-<script>
-if (document.cookie.split('; ').indexOf('jfi_loader_seen=1') !== -1) {
-    document.documentElement.classList.add('loader-seen');
-}
-</script>
+     The layout includes it on the home page only, on every visit to it. --}}
 <div aria-busy="true" aria-label="Loading {{ $site['name'] }}" aria-live="polite" class="page-loader" id="page-loader" role="status">
 <div aria-hidden="true" class="page-loader-bg">
 <img alt="" decoding="async" fetchpriority="high" height="720" src="{{ asset('assets/images/loader-background.jpeg') }}" width="1280"/>
@@ -44,13 +37,6 @@ if (document.cookie.split('; ').indexOf('jfi_loader_seen=1') !== -1) {
         return;
     }
 
-    if (root.classList.contains('loader-seen')) {
-        loader.remove();
-
-        return;
-    }
-
-    document.cookie = 'jfi_loader_seen=1; path=/; SameSite=Lax';
     root.classList.add('is-loading');
 
     var bar = loader.querySelector('.page-loader-bar');
