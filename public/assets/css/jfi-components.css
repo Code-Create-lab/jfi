@@ -694,6 +694,107 @@ main h4 a{
     color: var(--jfi-gold);
 }
 
+/* Office bearers slider on the home page. Desktop only: below 992px the
+   script leaves the Bootstrap grid in place and keeps the controls hidden. */
+.bearers-slider.swiper .swiper-wrapper{
+    padding-bottom: 36px;
+}
+
+.bearers-slider.swiper .swiper-slide{
+    height: auto;
+}
+
+/* Too few bearers to slide: center them as the grid does */
+.bearers-slider.is-locked .swiper-wrapper{
+    justify-content: center;
+}
+
+.bearers-slider-controls{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.bearers-slider-controls[hidden]{
+    display: none;
+}
+
+.bearers-slider-pagination{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-left: -8px;
+}
+
+.bearers-slider-pagination.swiper-pagination-horizontal{
+    width: auto;
+}
+
+.bearers-slider-dot{
+    position: relative;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+}
+
+.bearers-slider-dot::before{
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    right: 8px;
+    height: 4px;
+    margin-top: -2px;
+    border-radius: 2px;
+    background-color: rgba(10, 36, 99, .2);
+    transition: background-color .2s ease;
+}
+
+.bearers-slider-dot:hover::before{
+    background-color: rgba(10, 36, 99, .45);
+}
+
+.bearers-slider-dot.is-active::before{
+    background-color: var(--jfi-gold);
+}
+
+.bearers-slider-dot:focus-visible{
+    outline: 2px solid var(--jfi-navy);
+    outline-offset: -2px;
+}
+
+.bearers-slider-arrows{
+    display: flex;
+    gap: 8px;
+}
+
+.bearers-slider-arrow{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid rgba(10, 36, 99, .3);
+    border-radius: var(--radius-sm);
+    background-color: #FFFFFF;
+    color: var(--jfi-navy);
+    cursor: pointer;
+    transition: border-color .2s ease, background-color .2s ease, color .2s ease;
+}
+
+.bearers-slider-arrow:hover{
+    border-color: var(--jfi-navy);
+    background-color: var(--jfi-navy);
+    color: #FFFFFF;
+}
+
+.bearers-slider-arrow.is-disabled{
+    opacity: .4;
+    pointer-events: none;
+}
+
 /* Association cards */
 
 .association-card{

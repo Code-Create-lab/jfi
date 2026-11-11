@@ -185,10 +185,19 @@
 <x-section-heading id="bearers-title" label="Office Bearers" lede="The national office bearers accountable for the rule book, the championship calendar and the player registry." title="Who Runs the Federation"/>
 <a class="jfi-link" href="{{ route('frontend.office-bearers.national') }}">All office bearers <i aria-hidden="true" class="fa-solid fa-arrow-right"></i></a>
 </div>
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center">
+<div aria-label="National office bearers" class="bearers-slider" data-bearers-slider role="region">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center" data-bearers-track>
 @foreach ($nationalBearers as $bearer)
-<div class="col"><x-person-card :person="$bearer"/></div>
+<div class="col" data-bearers-slide><x-person-card :person="$bearer"/></div>
 @endforeach
+</div>
+<div class="bearers-slider-controls" data-bearers-controls hidden>
+<div class="bearers-slider-pagination" data-bearers-pagination></div>
+<div class="bearers-slider-arrows">
+<button aria-label="Previous office bearers" class="bearers-slider-arrow" data-bearers-prev type="button"><i aria-hidden="true" class="fa-solid fa-arrow-left"></i></button>
+<button aria-label="Next office bearers" class="bearers-slider-arrow" data-bearers-next type="button"><i aria-hidden="true" class="fa-solid fa-arrow-right"></i></button>
+</div>
+</div>
 </div>
 </div>
 </section>
@@ -519,4 +528,5 @@ Announcements and press releases from the federation office will appear here.
 
 @push('scripts')
 <script src="@versionedAsset('assets/js/banner.js')"></script>
+<script src="@versionedAsset('assets/js/bearers-slider.js')"></script>
 @endpush
